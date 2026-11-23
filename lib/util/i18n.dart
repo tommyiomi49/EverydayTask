@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:personaltasklogger/util/extensions.dart';
@@ -16,20 +15,16 @@ Locale currentLocale(BuildContext context) {
 Locale systemLocale(BuildContext context) {
   final localizationDelegate = LocalizedApp.of(context).delegate;
 
-  final systemLanguage = Platform.localeName
-      .split("_")
-      .first;
-  final appLanguages = localizationDelegate.supportedLocales
-      .map((e) => e.languageCode);
+  final systemLanguage = Platform.localeName.split("_").first;
+  final appLanguages =
+      localizationDelegate.supportedLocales.map((e) => e.languageCode);
   debugPrint("system language: $systemLanguage");
   final systemLanguageSupported = appLanguages.contains(systemLanguage);
   if (systemLanguageSupported) {
     return Locale(systemLanguage);
-  }
-  else {
+  } else {
     return localizationDelegate.currentLocale;
   }
-
 }
 
 bool isI18nKey(String string) =>
@@ -44,8 +39,7 @@ String translateI18nKey(String string) {
     final key = extractI18nKey(string);
     //debugPrint("extracted i18n key: $key");
     return translate(key);
-  }
-  else {
+  } else {
     return string;
   }
 }
@@ -65,8 +59,7 @@ String wrapToI18nKey(String key) {
 String tryWrapToI18nKey(String text, String key) {
   if (isEqualToTranslation(text, key)) {
     return key;
-  }
-  else {
+  } else {
     return text;
   }
 }

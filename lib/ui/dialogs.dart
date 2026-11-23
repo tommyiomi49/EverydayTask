@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -20,54 +19,56 @@ import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 import 'taskGroupIcons.dart';
 
-
 final int MAX_DAYS = 7300; // around 20 years
 
-Future<IconPickerIcon?> showIconPickerDialog(BuildContext context, String title) {
-
+Future<IconPickerIcon?> showIconPickerDialog(
+    BuildContext context, String title) {
   return showIconPicker(context,
       configuration: new SinglePickerConfiguration(
-        iconSize: 32.0,
-        title: Text(title),
-        iconColor: BUTTON_COLOR,
-        searchHintText: "${translate('common.search')} ...",
-   //     noResultsText: "Not found",
-        closeChild: TextButton(
-          child: Text(translate("common.cancel")),
-          onPressed:  () => Navigator.of(context).pop(),
-        ),
-        showTooltips: true,
-        customIconPack: getAllTaskGroupIcons(),
-        iconPackModes: [IconPack.custom])
-  );
+          iconSize: 32.0,
+          title: Text(title),
+          iconColor: BUTTON_COLOR,
+          searchHintText: "${translate('common.search')} ...",
+          //     noResultsText: "Not found",
+          closeChild: TextButton(
+            child: Text(translate("common.cancel")),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          showTooltips: true,
+          customIconPack: getAllTaskGroupIcons(),
+          iconPackModes: [IconPack.custom]));
 }
 
-Future<bool?> showColorPicker(BuildContext context, {required String title, required Color initialColor, required Function(Color) onColorChanged, required Function() onOkClicked}) {
+Future<bool?> showColorPicker(BuildContext context,
+    {required String title,
+    required Color initialColor,
+    required Function(Color) onColorChanged,
+    required Function() onOkClicked}) {
   final dialog = AlertDialog(
-      title: Text(title),
-      content: SingleChildScrollView(
-        child: ColorPicker(
-          pickerColor: initialColor.withOpacity(1.0),
-          enableAlpha: false,
-          onColorChanged: onColorChanged,
-        ),
+    title: Text(title),
+    content: SingleChildScrollView(
+      child: ColorPicker(
+        pickerColor: initialColor.withValues(alpha: 1.0),
+        enableAlpha: false,
+        onColorChanged: onColorChanged,
       ),
-      actions: <Widget>[
-        TextButton(
-          child: Text(translate("common.cancel")),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        TextButton(
-          child: Text(translate("common.ok")),
-          onPressed: () {
-            onOkClicked();
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
+    ),
+    actions: <Widget>[
+      TextButton(
+        child: Text(translate("common.cancel")),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+      TextButton(
+        child: Text(translate("common.ok")),
+        onPressed: () {
+          onOkClicked();
+          Navigator.of(context).pop();
+        },
+      ),
+    ],
+  );
 
   return showDialog(
     context: context,
@@ -77,7 +78,10 @@ Future<bool?> showColorPicker(BuildContext context, {required String title, requ
   );
 }
 
-Future<DateTime?> showTweakedDatePicker(BuildContext context, {DateTime? initialDate, String? helpText, bool Function(DateTime)? selectableDayPredicate}) {
+Future<DateTime?> showTweakedDatePicker(BuildContext context,
+    {DateTime? initialDate,
+    String? helpText,
+    bool Function(DateTime)? selectableDayPredicate}) {
   return showDatePicker(
       context: context,
       helpText: helpText,
@@ -87,11 +91,11 @@ Future<DateTime?> showTweakedDatePicker(BuildContext context, {DateTime? initial
       selectableDayPredicate: selectableDayPredicate,
       builder: (BuildContext context, Widget? child) {
         return _pickerTheme(context, child);
-      }
-  );
+      });
 }
 
-Future<DateTimeRange?> showTweakedDateRangePicker(BuildContext context, {DateTimeRange? initialDateRange}) {
+Future<DateTimeRange?> showTweakedDateRangePicker(BuildContext context,
+    {DateTimeRange? initialDateRange}) {
   return showDateRangePicker(
       context: context,
       initialDateRange: initialDateRange,
@@ -100,31 +104,32 @@ Future<DateTimeRange?> showTweakedDateRangePicker(BuildContext context, {DateTim
       lastDate: DateTime.now().add(Duration(days: MAX_DAYS)),
       builder: (BuildContext context, Widget? child) {
         return _pickerTheme(context, child);
-      }
-  );
+      });
 }
 
 Theme _pickerTheme(BuildContext context, Widget? child) {
   return Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(
-              primary: BUTTON_COLOR,
-              onPrimary: Colors.black,
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              iconColor: BUTTON_COLOR,
-             // primary: BUTTON_COLOR,
-            ),
-          ),
+    data: Theme.of(context).copyWith(
+      colorScheme: ColorScheme.light(
+        primary: BUTTON_COLOR,
+        onPrimary: Colors.black,
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          iconColor: BUTTON_COLOR,
+          // primary: BUTTON_COLOR,
         ),
-        child: child!,
-      );
+      ),
+    ),
+    child: child!,
+  );
 }
 
 void showConfirmationDialog(BuildContext context, String title, String message,
-    {Icon? icon, Function()? okPressed, Function()? cancelPressed, Widget? neutralButton}) {
-
+    {Icon? icon,
+    Function()? okPressed,
+    Function()? cancelPressed,
+    Widget? neutralButton}) {
   List<Widget> actions = [];
   if (neutralButton != null) {
     actions.add(neutralButton);
@@ -132,30 +137,32 @@ void showConfirmationDialog(BuildContext context, String title, String message,
   if (cancelPressed != null) {
     Widget cancelButton = TextButton(
       child: Text(translate("common.cancel")),
-      onPressed:  cancelPressed,
+      onPressed: cancelPressed,
     );
     actions.add(cancelButton);
   }
   if (okPressed != null) {
     Widget okButton = TextButton(
       child: Text(translate("common.ok")),
-      onPressed:  okPressed,
+      onPressed: okPressed,
     );
     actions.add(okButton);
   }
   AlertDialog alert = AlertDialog(
     title: icon != null
-      ? Wrap(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-        child: icon,
-      ),
-      Text(title)
-    ],)
-      : Text(title),
+        ? Wrap(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                child: icon,
+              ),
+              Text(title)
+            ],
+          )
+        : Text(title),
     content: Text(message),
     actions: actions,
-  );  // show the dialog
+  ); // show the dialog
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -164,11 +171,16 @@ void showConfirmationDialog(BuildContext context, String title, String message,
   );
 }
 
-
 void showCustomDialog(BuildContext context,
-    {required String title, required String message, required Widget body,
-      Icon? icon, Function()? okPressed, Function()? cancelPressed, Widget? neutralButton, int titleFlex = 1, int bodyFlex = 1}) {
-
+    {required String title,
+    required String message,
+    required Widget body,
+    Icon? icon,
+    Function()? okPressed,
+    Function()? cancelPressed,
+    Widget? neutralButton,
+    int titleFlex = 1,
+    int bodyFlex = 1}) {
   List<Widget> actions = [];
   if (neutralButton != null) {
     actions.add(neutralButton);
@@ -176,35 +188,39 @@ void showCustomDialog(BuildContext context,
   if (cancelPressed != null) {
     Widget cancelButton = TextButton(
       child: Text(translate("common.cancel")),
-      onPressed:  cancelPressed,
+      onPressed: cancelPressed,
     );
     actions.add(cancelButton);
   }
   if (okPressed != null) {
     Widget okButton = TextButton(
       child: Text(translate("common.ok")),
-      onPressed:  okPressed,
+      onPressed: okPressed,
     );
     actions.add(okButton);
   }
   AlertDialog alert = AlertDialog(
     title: icon != null
-      ? Row(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-        child: icon,
-      ),
-      Text(title)
-    ],)
-      : Text(title),
+        ? Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                child: icon,
+              ),
+              Text(title)
+            ],
+          )
+        : Text(title),
     content: Column(
       children: [
-        Expanded(flex: titleFlex, child: SingleChildScrollView(child: Text(message))),
+        Expanded(
+            flex: titleFlex,
+            child: SingleChildScrollView(child: Text(message))),
         Expanded(flex: bodyFlex, child: body),
       ],
     ),
     actions: actions,
-  );  // show the dialog
+  ); // show the dialog
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -215,8 +231,8 @@ void showCustomDialog(BuildContext context,
 
 showWaitingDialog(BuildContext context) {
   final dialog = AlertDialog(
-      content: SizedBox(height: 60,
-          child: Center(child: CircularProgressIndicator())));
+      content: SizedBox(
+          height: 60, child: Center(child: CircularProgressIndicator())));
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -232,35 +248,37 @@ Future<bool?> showDurationPickerDialog({
   Duration? initialDuration,
   required ValueChanged<Duration> onChanged,
 }) {
-
   final durationPicker = DurationPicker(
-      initialDuration: initialDuration,
-      onChanged: onChanged,
+    initialDuration: initialDuration,
+    onChanged: onChanged,
   );
 
   Dialog dialog = Dialog(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)), //this right here
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0)), //this right here
     child: Container(
       height: 300.0,
       width: 300.0,
-
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           durationPicker,
-          SizedBox(height: 20.0,),
+          SizedBox(
+            height: 20.0,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-            TextButton(
-              child: Text(translate("common.cancel")),
-              onPressed:  () => Navigator.of(context).pop(false),
-            ),
-            TextButton(
-              child: Text(translate("common.ok")),
-              onPressed:  () => Navigator.of(context).pop(true),
-            )
-            ],)
+              TextButton(
+                child: Text(translate("common.cancel")),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              TextButton(
+                child: Text(translate("common.ok")),
+                onPressed: () => Navigator.of(context).pop(true),
+              )
+            ],
+          )
         ],
       ),
     ),
@@ -274,44 +292,51 @@ Future<bool?> showDurationPickerDialog({
   );
 }
 
-Future<bool?> showRepetitionPickerDialog({
-  required BuildContext context,
-  CustomRepetition? initialRepetition,
-  required String description,
-  required ValueChanged<CustomRepetition> onChanged,
-  List<RepetitionUnit>? supportedUnits
-}) {
-
+Future<bool?> showRepetitionPickerDialog(
+    {required BuildContext context,
+    CustomRepetition? initialRepetition,
+    required String description,
+    required ValueChanged<CustomRepetition> onChanged,
+    List<RepetitionUnit>? supportedUnits}) {
   final repetitionPicker = RepetitionPicker(
     description: description,
     initialRepetition: initialRepetition,
     onChanged: onChanged,
-    supportedUnits: supportedUnits ?? [RepetitionUnit.DAYS, RepetitionUnit.WEEKS, RepetitionUnit.MONTHS, RepetitionUnit.YEARS],
+    supportedUnits: supportedUnits ??
+        [
+          RepetitionUnit.DAYS,
+          RepetitionUnit.WEEKS,
+          RepetitionUnit.MONTHS,
+          RepetitionUnit.YEARS
+        ],
   );
 
   Dialog dialog = Dialog(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0)), //this right here
     child: Container(
       height: 350.0,
       width: 300.0,
-
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           repetitionPicker,
-          SizedBox(height: 20.0,),
+          SizedBox(
+            height: 20.0,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-            TextButton(
-              child: Text(translate("common.cancel")),
-              onPressed:  () => Navigator.of(context).pop(false),
-            ),
-            TextButton(
-              child: Text(translate("common.ok")),
-              onPressed:  () => Navigator.of(context).pop(true),
-            )
-            ],)
+              TextButton(
+                child: Text(translate("common.cancel")),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              TextButton(
+                child: Text(translate("common.ok")),
+                onPressed: () => Navigator.of(context).pop(true),
+              )
+            ],
+          )
         ],
       ),
     ),
@@ -325,38 +350,43 @@ Future<bool?> showRepetitionPickerDialog({
   );
 }
 
-Future<bool?> showTemplateDialog(BuildContext context, String title, String description,
-    {
-      Function()? okPressed,
-      Function()? cancelPressed,
-      required Function(Object) selectedItem,
-      bool? onlyHidden,
-      bool? hideEmptyNodes,
-      bool? expandAll,
-      String? initialSelectedKey,
-      int? rootTaskGroupId,
-      Template? templateToExclude,
-      int bodyFlex = 100,
-    }) {
+Future<bool?> showTemplateDialog(
+  BuildContext context,
+  String title,
+  String description, {
+  Function()? okPressed,
+  Function()? cancelPressed,
+  required Function(Object) selectedItem,
+  bool? onlyHidden,
+  bool? hideEmptyNodes,
+  bool? expandAll,
+  String? initialSelectedKey,
+  int? rootTaskGroupId,
+  Template? templateToExclude,
+  int bodyFlex = 100,
+}) {
   Widget cancelButton = TextButton(
     child: Text(translate("common.cancel")),
-    onPressed:  cancelPressed,
+    onPressed: cancelPressed,
   );
   Widget okButton = TextButton(
     child: Text(translate("common.ok")),
-    onPressed:  okPressed,
+    onPressed: okPressed,
   );
 
   final taskTemplateListStateKey = new GlobalKey<TaskTemplateListState>();
-  final templateDialogDescriptionStateKey = new GlobalKey<TemplateDialogDescriptionState>();
+  final templateDialogDescriptionStateKey =
+      new GlobalKey<TemplateDialogDescriptionState>();
 
   final dialog = AlertDialog(
-    title: TemplateDialogBar(title, expandAll??false, taskTemplateListStateKey, templateDialogDescriptionStateKey),
+    title: TemplateDialogBar(title, expandAll ?? false,
+        taskTemplateListStateKey, templateDialogDescriptionStateKey),
     titlePadding: EdgeInsets.fromLTRB(16, 16, 8, 8),
     content: Container(
       child: Column(
         children: [
-          TemplateDialogDescription(description, templateDialogDescriptionStateKey),
+          TemplateDialogDescription(
+              description, templateDialogDescriptionStateKey),
           Expanded(
             flex: bodyFlex,
             child: SizedBox(
@@ -381,7 +411,7 @@ Future<bool?> showTemplateDialog(BuildContext context, String title, String desc
       cancelButton,
       okButton,
     ],
-  );  // show the dialog
+  ); // show the dialog
   return showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -390,9 +420,11 @@ Future<bool?> showTemplateDialog(BuildContext context, String title, String desc
   );
 }
 
-Future<bool?> showSeverityPicker(BuildContext context, Severity? initialSeverity,
-    bool showText, ValueChanged<Severity?> onChanged) {
-
+Future<bool?> showSeverityPicker(
+    BuildContext context,
+    Severity? initialSeverity,
+    bool showText,
+    ValueChanged<Severity?> onChanged) {
   Widget clearButton = TextButton(
     child: Text(translate('common.words.clear').capitalize()),
     onPressed: () {
@@ -417,19 +449,19 @@ Future<bool?> showSeverityPicker(BuildContext context, Severity? initialSeverity
   );
 }
 
-Future<dynamic> showChoiceDialog(BuildContext context, String title, List<String> choices, {
-  Function()? okPressed,
-  Function()? cancelPressed,
-  int? initialSelected,
-  required ValueChanged<int> selectionChanged
-}) {
+Future<dynamic> showChoiceDialog(
+    BuildContext context, String title, List<String> choices,
+    {Function()? okPressed,
+    Function()? cancelPressed,
+    int? initialSelected,
+    required ValueChanged<int> selectionChanged}) {
   Widget cancelButton = TextButton(
     child: Text(translate("common.cancel")),
-    onPressed:  cancelPressed,
+    onPressed: cancelPressed,
   );
   Widget okButton = TextButton(
     child: Text(translate("common.ok")),
-    onPressed:  okPressed,
+    onPressed: okPressed,
   );
 
   return showDialog(
@@ -447,11 +479,11 @@ Future<dynamic> showChoiceDialog(BuildContext context, String title, List<String
             okButton,
           ],
         );
-      }
-  );
+      });
 }
 
-Future<dynamic> showPopUpMenuAtTapDown(BuildContext context, TapDownDetails tapDown, List<PopupMenuEntry> items) {
+Future<dynamic> showPopUpMenuAtTapDown(
+    BuildContext context, TapDownDetails tapDown, List<PopupMenuEntry> items) {
   return showMenu(
     context: context,
     position: RelativeRect.fromLTRB(
@@ -465,24 +497,24 @@ Future<dynamic> showPopUpMenuAtTapDown(BuildContext context, TapDownDetails tapD
   );
 }
 
-
 @immutable
 class TemplateDialogBar extends StatefulWidget {
   final String title;
   final GlobalKey<TaskTemplateListState> taskTemplateListStateKey;
-  final GlobalKey<TemplateDialogDescriptionState> templateDialogDescriptionStateKey;
+  final GlobalKey<TemplateDialogDescriptionState>
+      templateDialogDescriptionStateKey;
   final bool initialExpandAll;
 
   final expandIconKey = new GlobalKey<ToggleActionIconState>();
 
-  TemplateDialogBar(this.title, this.initialExpandAll, this.taskTemplateListStateKey, this.templateDialogDescriptionStateKey);
+  TemplateDialogBar(this.title, this.initialExpandAll,
+      this.taskTemplateListStateKey, this.templateDialogDescriptionStateKey);
 
   @override
   State<StatefulWidget> createState() => TemplateDialogBarState();
 }
 
 class TemplateDialogBarState extends State<TemplateDialogBar> {
-
   TextEditingController _searchQueryController = TextEditingController();
   String? _searchString;
   bool _isAllExpanded = false;
@@ -495,82 +527,78 @@ class TemplateDialogBarState extends State<TemplateDialogBar> {
 
   @override
   Widget build(BuildContext context) {
-
-    return _searchString != null
-        ? _buildSearchField()
-        : _buildBar();
+    return _searchString != null ? _buildSearchField() : _buildBar();
   }
 
   Widget _buildBar() {
-    final expandIcon = ToggleActionIcon(Icons.unfold_less, Icons.unfold_more, _isAllExpanded, widget.expandIconKey);
+    final expandIcon = ToggleActionIcon(Icons.unfold_less, Icons.unfold_more,
+        _isAllExpanded, widget.expandIconKey);
 
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      Flexible(flex: 30, child: Text(widget.title)),
+      Spacer(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Flexible(
-              flex: 30,
-              child: Text(widget.title)),
-          Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 40,
-                child: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: _startSearch,
-                ),
-              ),
-              SizedBox(
-                width: 40,
-                child: IconButton(
-                  icon: expandIcon,
-                  onPressed: () {
-                    setState(() {
-                      widget.taskTemplateListStateKey.currentState?.updateExpanded(_isAllExpanded);
-                      _isAllExpanded = !_isAllExpanded;
-                      widget.expandIconKey.currentState?.refresh(_isAllExpanded);
-                    });
-                  },
-                ),
-              ),
-            ],
-          )]
-    );
+          SizedBox(
+            width: 40,
+            child: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: _startSearch,
+            ),
+          ),
+          SizedBox(
+            width: 40,
+            child: IconButton(
+              icon: expandIcon,
+              onPressed: () {
+                setState(() {
+                  widget.taskTemplateListStateKey.currentState
+                      ?.updateExpanded(_isAllExpanded);
+                  _isAllExpanded = !_isAllExpanded;
+                  widget.expandIconKey.currentState?.refresh(_isAllExpanded);
+                });
+              },
+            ),
+          ),
+        ],
+      )
+    ]);
   }
 
   Widget _buildSearchField() {
-    return Row(children: [
-      IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          _stopSearching();
-        },
-      ),
-      Flexible(
-        child:
-        TextField(
-          controller: _searchQueryController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: "${translate('common.search')} $ELLIPSIS",
-            border: InputBorder.none,
-          ),
-          style: TextStyle(fontSize: 16.0),
-          onChanged: (query) {
-            widget.taskTemplateListStateKey.currentState?.searchQueryUpdated(query);
+    return Row(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            _stopSearching();
           },
         ),
-      ),
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-        _clearOrCloseSearchBar(context);
-        },
-      )
-    ],);
+        Flexible(
+          child: TextField(
+            controller: _searchQueryController,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: "${translate('common.search')} $ELLIPSIS",
+              border: InputBorder.none,
+            ),
+            style: TextStyle(fontSize: 16.0),
+            onChanged: (query) {
+              widget.taskTemplateListStateKey.currentState
+                  ?.searchQueryUpdated(query);
+            },
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            _clearOrCloseSearchBar(context);
+          },
+        )
+      ],
+    );
   }
-
 
   void _startSearch() {
     setState(() {
@@ -578,7 +606,6 @@ class TemplateDialogBarState extends State<TemplateDialogBar> {
       widget.templateDialogDescriptionStateKey.currentState?.update(false);
     });
   }
-
 
   void _stopSearching() {
     _clearSearchQuery();
@@ -594,21 +621,17 @@ class TemplateDialogBarState extends State<TemplateDialogBar> {
       _searchQueryController.clear();
       _searchString = "";
       widget.taskTemplateListStateKey.currentState?.searchQueryUpdated("");
-
     });
   }
 
   void _clearOrCloseSearchBar(BuildContext context) {
     if (_searchQueryController.text.isEmpty) {
       _stopSearching();
-    }
-    else {
+    } else {
       _clearSearchQuery();
     }
   }
-
 }
-
 
 @immutable
 class TemplateDialogDescription extends StatefulWidget {
@@ -616,7 +639,8 @@ class TemplateDialogDescription extends StatefulWidget {
 
   TemplateDialogDescription(
       this.description,
-      GlobalKey<TemplateDialogDescriptionState> templateDialogDescriptionStateKey)
+      GlobalKey<TemplateDialogDescriptionState>
+          templateDialogDescriptionStateKey)
       : super(key: templateDialogDescriptionStateKey);
 
   @override
@@ -624,12 +648,10 @@ class TemplateDialogDescription extends StatefulWidget {
 }
 
 class TemplateDialogDescriptionState extends State<TemplateDialogDescription> {
-
   bool _showDescription = true;
 
   @override
   Widget build(BuildContext context) {
-
     return _showDescription
         ? Flexible(
             flex: 11,
@@ -644,6 +666,4 @@ class TemplateDialogDescriptionState extends State<TemplateDialogDescription> {
       _showDescription = showDescription;
     });
   }
-
 }
-

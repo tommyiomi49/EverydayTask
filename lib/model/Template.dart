@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:personaltasklogger/model/TaskGroup.dart';
 
 import '../db/repository/TaskGroupRepository.dart';
 import 'TitleAndDescription.dart';
@@ -16,9 +15,16 @@ abstract class Template extends TitleAndDescription implements Comparable {
   bool? favorite = false;
   bool? hidden = false;
 
-  Template({this.tId, required this.taskGroupId,
-      required String title, String? description, this.when, this.severity, this.favorite, this.hidden})
-  : super(title, description);
+  Template(
+      {this.tId,
+      required this.taskGroupId,
+      required String title,
+      String? description,
+      this.when,
+      this.severity,
+      this.favorite,
+      this.hidden})
+      : super(title, description);
 
   bool isVariant() => tId != null && tId!.isVariant;
 
@@ -37,7 +43,6 @@ abstract class Template extends TitleAndDescription implements Comparable {
     final text = Text(" " + translatedTitle);
     var icon = getIcon(true);
     return Row(children: [icon, text]);
-
   }
 
   @override

@@ -27,26 +27,24 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
 
     if (widget._taskGroup != null) {
       _taskGroup = TaskGroup(
-          id: widget._taskGroup!.id, 
-        name: widget._taskGroup!.translatedName, 
+        id: widget._taskGroup!.id,
+        name: widget._taskGroup!.translatedName,
         colorRGB: widget._taskGroup!.colorRGB,
         iconData: widget._taskGroup!.iconData,
       );
-    }
-    else {
+    } else {
       _taskGroup = TaskGroup(
         name: "",
         colorRGB: Colors.lime.shade800,
         iconData: Icons.token_outlined,
       );
     }
- 
-    _updateState();
 
+    _updateState();
   }
 
   void _updateState() {
-      nameController.text = _taskGroup?.translatedName ?? "";
+    nameController.text = _taskGroup?.translatedName ?? "";
   }
 
   @override
@@ -71,12 +69,16 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
                   showConfirmationDialog(
                     context,
                     translate('forms.task_group.reset.title'),
-                    translate('forms.task_group.reset.message', args: {"name": _taskGroup!.translatedName}),
+                    translate('forms.task_group.reset.message',
+                        args: {"name": _taskGroup!.translatedName}),
                     icon: const Icon(Icons.undo),
                     okPressed: () {
-                      Navigator.pop(context); // dismiss dialog, should be moved in Dialogs.dart somehow
+                      Navigator.pop(
+                          context); // dismiss dialog, should be moved in Dialogs.dart somehow
 
-                      final predefinedTaskGroup = TaskGroupRepository.findPredefinedTaskGroupById(_taskGroup!.id!);
+                      final predefinedTaskGroup =
+                          TaskGroupRepository.findPredefinedTaskGroupById(
+                              _taskGroup!.id!);
                       _taskGroup?.name = predefinedTaskGroup.name;
                       _taskGroup?.colorRGB = predefinedTaskGroup.colorRGB;
                       _taskGroup?.iconData = predefinedTaskGroup.iconData;
@@ -84,8 +86,8 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
                         _updateState();
                       });
                     },
-                    cancelPressed: () =>
-                        Navigator.pop(context), // dismiss dialog, should be moved in Dialogs.dart somehow
+                    cancelPressed: () => Navigator.pop(
+                        context), // dismiss dialog, should be moved in Dialogs.dart somehow
                   );
                 },
               ),
@@ -118,27 +120,33 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
                             return null;
                           },
                         ),
-                        ButtonBar(
+                        OverflowBar(
                           alignment: MainAxisAlignment.center,
                           //    buttonPadding: EdgeInsets.symmetric(horizontal: 0.0),
                           children: [
                             OutlinedButton.icon(
                               onPressed: () async {
-                                final iconData = await showIconPickerDialog(context, translate('forms.task_group.change_icon.message'));
+                                final iconData = await showIconPickerDialog(
+                                    context,
+                                    translate(
+                                        'forms.task_group.change_icon.message'));
                                 if (iconData != null) {
-                                  setState(() => _taskGroup!.iconData = iconData.data);
+                                  setState(() =>
+                                      _taskGroup!.iconData = iconData.data);
                                 }
                               },
                               icon: _taskGroup!.getIcon(false),
-                              label: Text(translate('forms.task_group.change_icon.title')),
+                              label: Text(translate(
+                                  'forms.task_group.change_icon.title')),
                             ),
                             OutlinedButton.icon(
                               onPressed: () {
                                 Color? _color;
-                                showColorPicker(
-                                    context,
-                                    title: translate('forms.task_group.change_color.message'),
-                                    initialColor: _taskGroup!.foregroundColor(context),
+                                showColorPicker(context,
+                                    title: translate(
+                                        'forms.task_group.change_color.message'),
+                                    initialColor:
+                                        _taskGroup!.foregroundColor(context),
                                     onColorChanged: (color) => _color = color,
                                     onOkClicked: () {
                                       setState(() {
@@ -147,14 +155,13 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
                                               _color!.withAlpha(100);
                                         }
                                       });
-                                    }
-                                );
+                                    });
                               },
-                              icon: Icon(Icons.palette_outlined, color: _taskGroup!.foregroundColor(context)),
-                              label: Text(translate('forms.task_group.change_color.title')),
-          
+                              icon: Icon(Icons.palette_outlined,
+                                  color: _taskGroup!.foregroundColor(context)),
+                              label: Text(translate(
+                                  'forms.task_group.change_color.title')),
                             ),
-          
                           ],
                         ),
                         Align(
@@ -163,22 +170,23 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
                             padding: const EdgeInsets.symmetric(vertical: 26.0),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: Size(double.infinity, 40), // double.infinity is the width and 30 is the height
+                                minimumSize: Size(double.infinity,
+                                    40), // double.infinity is the width and 30 is the height
                               ),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-          
                                   if (_taskGroup == null) {
-                                    _taskGroup = TaskGroup(name: nameController.text);
-                                  }
-                                  else {
-                                      // update task template
+                                    _taskGroup =
+                                        TaskGroup(name: nameController.text);
+                                  } else {
+                                    // update task template
                                     _taskGroup!.name = nameController.text;
                                   }
                                   Navigator.pop(context, _taskGroup);
                                 }
                               },
-                              child: Text(translate('forms.common.button_save')),
+                              child:
+                                  Text(translate('forms.common.button_save')),
                             ),
                           ),
                         ),
@@ -193,7 +201,4 @@ class _TaskGroupFormState extends State<TaskGroupForm> {
       ),
     );
   }
-
-
-
 }

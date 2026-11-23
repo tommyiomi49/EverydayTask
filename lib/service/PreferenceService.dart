@@ -1,7 +1,5 @@
 import 'dart:collection';
-import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:personaltasklogger/db/repository/KeyValueRepository.dart';
@@ -12,20 +10,22 @@ import '../db/repository/mapper.dart';
 import '../model/When.dart';
 
 class PreferenceService implements ITranslatePreferences {
-
   static final PREF_LANGUAGE_SELECTION = "common/languageSelection";
 
   static final PREF_SHOW_TIME_OF_DAY_AS_TEXT = "common/showTimeOfDayAsText";
-  
+
   static final PREF_DARK_THEME = "common/darkTheme";
   static final PREF_SHOW_WEEKDAYS = "common/showWeekdays";
   static final PREF_DATE_FORMAT_SELECTION = "common/dateFormatSelection";
-  
-  static final PREF_SHOW_ACTION_NOTIFICATIONS = "common/showActionNotifications";
-  static final PREF_SHOW_ACTION_NOTIFICATION_DURATION_SELECTION = "common/showActionNotificationDurationSelection";
-  static final PREF_EXECUTE_SCHEDULES_ON_TASK_EVENT = "common/executeSchedulesOnTaskEvent";
-  static final PREF_SHOW_BADGE_FOR_DUE_SCHEDULES = "common/showBadgeForDueSchedules";
 
+  static final PREF_SHOW_ACTION_NOTIFICATIONS =
+      "common/showActionNotifications";
+  static final PREF_SHOW_ACTION_NOTIFICATION_DURATION_SELECTION =
+      "common/showActionNotificationDurationSelection";
+  static final PREF_EXECUTE_SCHEDULES_ON_TASK_EVENT =
+      "common/executeSchedulesOnTaskEvent";
+  static final PREF_SHOW_BADGE_FOR_DUE_SCHEDULES =
+      "common/showBadgeForDueSchedules";
 
   static final DATA_SHOW_SCHEDULED_SUMMARY = "data/showScheduledSummary";
   static final DATA_SHOW_SCHEDULE_MODE_HINTS = "data/showScheduledModeHint";
@@ -35,7 +35,6 @@ class PreferenceService implements ITranslatePreferences {
   static final DATA_CURRENT_STATS_DATA_TYPE = "data/currentStatsDataType";
   static final DATA_CURRENT_STATS_GROUP_BY = "data/currentStatsGroupBy";
 
-
   static final PreferenceService _service = PreferenceService._internal();
 
   factory PreferenceService() {
@@ -44,52 +43,49 @@ class PreferenceService implements ITranslatePreferences {
 
   final _whenAtDayTimes = HashMap<AroundWhenAtDay, TimeOfDay>();
 
-
-
-
   PreferenceService._internal() {
-    getBool(PreferenceService.PREF_SHOW_BADGE_FOR_DUE_SCHEDULES)
-        .then((value) {
-          if (value != null) {
-            showBadgeForDueSchedules = value;
-          }
+    getBool(PreferenceService.PREF_SHOW_BADGE_FOR_DUE_SCHEDULES).then((value) {
+      if (value != null) {
+        showBadgeForDueSchedules = value;
+      }
     });
-    getBool(PreferenceService.PREF_SHOW_TIME_OF_DAY_AS_TEXT)
-        .then((value) {
-          if (value != null) {
-            showTimeOfDayAsText = value;
-          }
+    getBool(PreferenceService.PREF_SHOW_TIME_OF_DAY_AS_TEXT).then((value) {
+      if (value != null) {
+        showTimeOfDayAsText = value;
+      }
     });
-    getBool(PreferenceService.PREF_SHOW_WEEKDAYS)
-        .then((value) {
-          if (value != null) {
-            showWeekdays = value;
-          }
+    getBool(PreferenceService.PREF_SHOW_WEEKDAYS).then((value) {
+      if (value != null) {
+        showWeekdays = value;
+      }
     });
-    getBool(PreferenceService.PREF_DARK_THEME)
-        .then((value) {
-          if (value != null) {
-            darkTheme = value;
-          }
+    getBool(PreferenceService.PREF_DARK_THEME).then((value) {
+      if (value != null) {
+        darkTheme = value;
+      }
     });
-    getInt(PreferenceService.PREF_DATE_FORMAT_SELECTION)
-        .then((value) {
+    getInt(PreferenceService.PREF_DATE_FORMAT_SELECTION).then((value) {
       if (value != null) {
         dateFormatSelection = value;
       }
     });
-
   }
 
-  TimeOfDay getWhenAtDayTimeOfDay(AroundWhenAtDay whenAtDay) => _whenAtDayTimes[whenAtDay] ?? When.fromWhenAtDayToTimeOfDay(whenAtDay, null, getDefault: true);
-  setWhenAtDayTimeOfDay(AroundWhenAtDay whenAtDay, TimeOfDay time) => _whenAtDayTimes[whenAtDay] = time;
-  resetWhenAtDayTimeOfDay(AroundWhenAtDay whenAtDay) => _whenAtDayTimes[whenAtDay] = When.fromWhenAtDayToTimeOfDay(whenAtDay, null, getDefault: true);
+  TimeOfDay getWhenAtDayTimeOfDay(AroundWhenAtDay whenAtDay) =>
+      _whenAtDayTimes[whenAtDay] ??
+      When.fromWhenAtDayToTimeOfDay(whenAtDay, null, getDefault: true);
+  setWhenAtDayTimeOfDay(AroundWhenAtDay whenAtDay, TimeOfDay time) =>
+      _whenAtDayTimes[whenAtDay] = time;
+  resetWhenAtDayTimeOfDay(AroundWhenAtDay whenAtDay) =>
+      _whenAtDayTimes[whenAtDay] =
+          When.fromWhenAtDayToTimeOfDay(whenAtDay, null, getDefault: true);
 
   initWhenAtDayTimes() async {
     for (AroundWhenAtDay whenAtDay in AroundWhenAtDay.values) {
       final keyValue = await KeyValueRepository.findByKey(whenAtDay.toString());
       if (keyValue != null) {
-        _whenAtDayTimes[whenAtDay] = timeOfDayFromEntity(int.parse(keyValue.value));
+        _whenAtDayTimes[whenAtDay] =
+            timeOfDayFromEntity(int.parse(keyValue.value));
       }
     }
   }
@@ -113,7 +109,9 @@ class PreferenceService implements ITranslatePreferences {
 
   Future<bool?> getBool(String key) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return _getPref(key, () => prefs.getBool(key), (val) => val == true.toString());  }
+    return _getPref(
+        key, () => prefs.getBool(key), (val) => val == true.toString());
+  }
 
   Future<bool> setString(String key, String value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -138,28 +136,27 @@ class PreferenceService implements ITranslatePreferences {
     return prefs.remove(key);
   }
 
-  Future<T> _getPref<T>(String key, T Function() loadPref, T Function(String) convertValue) async {
+  Future<T> _getPref<T>(String key, T Function() loadPref,
+      T Function(String) convertValue) async {
     var pref = loadPref();
 
     final keyValue = await KeyValueRepository.findByKey(key);
     if (keyValue == null && pref != null) {
       // migrate to table
       KeyValueRepository.insert(KeyValue(null, key, pref.toString()));
-    }
-    else if (keyValue != null) {
+    } else if (keyValue != null) {
       return convertValue(keyValue.value);
     }
     return pref;
   }
 
-  Future<bool> _setPref(SharedPreferences prefs, String key, dynamic value, Future<bool> Function() storePref) async {
-
+  Future<bool> _setPref(SharedPreferences prefs, String key, dynamic value,
+      Future<bool> Function() storePref) async {
     KeyValueRepository.findByKey(key).then((keyValue) {
       if (keyValue != null) {
         keyValue.value = value.toString();
         KeyValueRepository.update(keyValue);
-      }
-      else {
+      } else {
         KeyValueRepository.insert(KeyValue(null, key, value.toString()));
       }
     });
@@ -171,7 +168,7 @@ class PreferenceService implements ITranslatePreferences {
   Future<Locale?> getPreferredLocale() async {
     final languageSelection = await getInt(PREF_LANGUAGE_SELECTION);
 
-    this.languageSelection = languageSelection??0;
+    this.languageSelection = languageSelection ?? 0;
 
     if (languageSelection != null) {
       final locale = _getLocaleFromSelection(languageSelection);
@@ -192,16 +189,21 @@ class PreferenceService implements ITranslatePreferences {
     debugPrint("stored language choice: $languageSelection");
 
     switch (languageSelection) {
-      case 1: return Locale('en');
-      case 2: return Locale('de');
-      case 3: return Locale('fr');
-      case 4: return Locale('ru');
-      case 5: return Locale('es');
-      case 6: return Locale('zh');
-      case 7: return Locale('pt');
+      case 1:
+        return Locale('en');
+      case 2:
+        return Locale('de');
+      case 3:
+        return Locale('fr');
+      case 4:
+        return Locale('ru');
+      case 5:
+        return Locale('es');
+      case 6:
+        return Locale('zh');
+      case 7:
+        return Locale('pt');
     }
     return null;
   }
-
 }
-

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:infinite_listview/infinite_listview.dart';
@@ -7,10 +6,10 @@ import 'package:personaltasklogger/ui/utils.dart';
 
 // Copied from NumberPicker
 typedef TextMapper<T> = String Function(T value);
-class DynamicPicker<T> extends StatefulWidget {
 
+class DynamicPicker<T> extends StatefulWidget {
   final List<T> values;
-  
+
   /// Currently selected value
   final T value;
 
@@ -61,10 +60,11 @@ class DynamicPicker<T> extends StatefulWidget {
     this.haptics = false,
     this.decoration,
     this.infiniteLoop = false,
-  })  :super(key: key);
+  }) : super(key: key);
 
   @override
-  _DynamicPickerState<T> createState() => _DynamicPickerState<T>(this.onChanged);
+  _DynamicPickerState<T> createState() =>
+      _DynamicPickerState<T>(this.onChanged);
 }
 
 class _DynamicPickerState<T> extends State<DynamicPicker> {
@@ -184,7 +184,8 @@ class _DynamicPickerState<T> extends State<DynamicPicker> {
   Widget _itemBuilder(BuildContext context, int index) {
     final themeData = Theme.of(context);
     final defaultStyle = widget.textStyle ?? themeData.textTheme.bodyMedium;
-    final selectedStyle = TextStyle(color: isDarkMode(context) ? Colors.white : BUTTON_COLOR, fontSize: 24);
+    final selectedStyle = TextStyle(
+        color: isDarkMode(context) ? Colors.white : BUTTON_COLOR, fontSize: 24);
 
     final value = _getValueFromIndex(index % itemCount);
     final isExtra = !widget.infiniteLoop &&
@@ -194,7 +195,8 @@ class _DynamicPickerState<T> extends State<DynamicPicker> {
 
     final child = isExtra
         ? SizedBox.shrink()
-        : Text(widget.textMapper(value),
+        : Text(
+            widget.textMapper(value),
             style: itemStyle,
           );
 

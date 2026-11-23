@@ -1,16 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:personaltasklogger/model/ScheduledTask.dart';
-import 'package:personaltasklogger/model/TaskEvent.dart';
-import 'package:personaltasklogger/util/dates.dart';
-
-import '../ui/utils.dart';
-import 'Schedule.dart';
-import 'Template.dart';
-import 'TemplateId.dart';
-import 'TitleAndDescription.dart';
 
 class FutureScheduledTask extends ScheduledTask {
-
   FutureScheduledTask({
     required super.id,
     required super.taskGroupId,
@@ -24,5 +14,4 @@ class FutureScheduledTask extends ScheduledTask {
     required super.important,
     required super.oneTimeCompletedOn,
   });
-
 }

@@ -20,7 +20,6 @@ import '../dialogs.dart';
 import '../forms/TaskEventForm.dart';
 
 class TaskEventWidget extends StatefulWidget {
-
   final TaskEvent taskEvent;
   final bool isInitiallyExpanded;
   final bool Function()? shouldExpand;
@@ -30,7 +29,8 @@ class TaskEventWidget extends StatefulWidget {
   final PagesHolder pagesHolder;
   final bool selectInListWhenChanged;
 
-  TaskEventWidget(this.taskEvent, {
+  TaskEventWidget(
+    this.taskEvent, {
     Key? key,
     this.shouldExpand,
     this.onExpansionChanged,
@@ -40,41 +40,42 @@ class TaskEventWidget extends StatefulWidget {
     required this.pagesHolder,
     required this.selectInListWhenChanged,
   }) : super(key: key);
-  
+
   @override
   TaskEventWidgetState createState() => TaskEventWidgetState();
 
-  static Widget? taskGroupPresentation(BuildContext context, TaskEvent taskEvent) {
+  static Widget? taskGroupPresentation(
+      BuildContext context, TaskEvent taskEvent) {
     if (taskEvent.taskGroupId != null) {
-      final taskGroup = TaskGroupRepository.findByIdFromCache(taskEvent.taskGroupId!);
+      final taskGroup =
+          TaskGroupRepository.findByIdFromCache(taskEvent.taskGroupId!);
       return taskGroup.getTaskGroupRepresentation(context, useIconColor: true);
     }
     return null;
   }
 
-
   static Text buildWhenText(TaskEvent taskEvent, {bool small = false}) {
     if (small) {
       var text = formatToTime(taskEvent.startedAt);
-      if (taskEvent.aroundStartedAt != AroundWhenAtDay.CUSTOM && taskEvent.isAroundStartAtTheSameAsActualTime()) {
+      if (taskEvent.aroundStartedAt != AroundWhenAtDay.CUSTOM &&
+          taskEvent.isAroundStartAtTheSameAsActualTime()) {
         text = When.fromWhenAtDayToString(taskEvent.aroundStartedAt);
       }
       return Text(text, style: TextStyle(fontSize: 10));
-    }
-    else {
+    } else {
       var text = formatToDateTimeRange(
-          taskEvent.aroundStartedAt, taskEvent.startedAt,
-          taskEvent.aroundDuration, taskEvent.duration,
+          taskEvent.aroundStartedAt,
+          taskEvent.startedAt,
+          taskEvent.aroundDuration,
+          taskEvent.duration,
           taskEvent.trackingFinishedAt,
           taskEvent.isAroundStartAtTheSameAsActualTime());
       return Text(text);
     }
   }
-
 }
 
 class TaskEventWidgetState extends State<TaskEventWidget> {
-
   bool _isExpanded = false;
 
   @override
@@ -86,7 +87,8 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
   @override
   Widget build(BuildContext context) {
     final taskEvent = widget.taskEvent;
-    final taskGroup = TaskGroupRepository.findByIdFromCache(taskEvent.taskGroupId!);
+    final taskGroup =
+        TaskGroupRepository.findByIdFromCache(taskEvent.taskGroupId!);
     final expansionWidgets = _createExpansionWidgets(taskEvent);
 
     return Card(
@@ -94,22 +96,31 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
       child: ExpansionTile(
         key: GlobalKey(), // this makes updating all tiles if state changed
         title: _isExpanded
-            ? Text(kReleaseMode ? taskEvent.translatedTitle : "${taskEvent.translatedTitle} (id=${taskEvent.id})")
+            ? Text(kReleaseMode
+                ? taskEvent.translatedTitle
+                : "${taskEvent.translatedTitle} (id=${taskEvent.id})")
             : Row(
-          children: [
-            taskGroup.getIcon(true),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-              child: Text(truncate(kReleaseMode ? taskEvent.translatedTitle : "${taskEvent.translatedTitle} (id=${taskEvent.id})", length: 30)),
-            )
-          ],
-        ),
-        subtitle: _isExpanded ? TaskEventWidget.taskGroupPresentation(context, taskEvent) : TaskEventWidget.buildWhenText(taskEvent, small: true),
+                children: [
+                  taskGroup.getIcon(true),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                    child: Text(truncate(
+                        kReleaseMode
+                            ? taskEvent.translatedTitle
+                            : "${taskEvent.translatedTitle} (id=${taskEvent.id})",
+                        length: 30)),
+                  )
+                ],
+              ),
+        subtitle: _isExpanded
+            ? TaskEventWidget.taskGroupPresentation(context, taskEvent)
+            : TaskEventWidget.buildWhenText(taskEvent, small: true),
         children: expansionWidgets,
         collapsedBackgroundColor: taskGroup.backgroundColor(context),
         backgroundColor: taskGroup.softColor(context),
         textColor: isDarkMode(context) ? BUTTON_COLOR.shade300 : BUTTON_COLOR,
-        initiallyExpanded: widget.shouldExpand != null ? widget.shouldExpand!() : _isExpanded,
+        initiallyExpanded:
+            widget.shouldExpand != null ? widget.shouldExpand!() : _isExpanded,
         onExpansionChanged: (expanded) {
           setState(() {
             _isExpanded = expanded;
@@ -122,11 +133,11 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
     );
   }
 
-
   List<Widget> _createExpansionWidgets(TaskEvent taskEvent) {
     var expansionWidgets = <Widget>[];
 
-    if (taskEvent.translatedDescription != null && taskEvent.translatedDescription!.isNotEmpty) {
+    if (taskEvent.translatedDescription != null &&
+        taskEvent.translatedDescription!.isNotEmpty) {
       expansionWidgets.add(Padding(
         padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 16),
         child: Text(taskEvent.translatedDescription!),
@@ -156,7 +167,8 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: const Icon(Icons.timer_outlined),
             ),
-            Text(formatToDuration(taskEvent.aroundDuration, taskEvent.duration, true)),
+            Text(formatToDuration(
+                taskEvent.aroundDuration, taskEvent.duration, true)),
           ],
         ),
       ),
@@ -168,7 +180,7 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ButtonBar(
+          OverflowBar(
             alignment: MainAxisAlignment.start,
             children: [
               TextButton(
@@ -177,69 +189,77 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
                     taskEvent.favorite = !taskEvent.favorite;
                   });
                   TaskEventRepository.update(taskEvent);
-                  widget.pagesHolder
-                      .taskEventList
+                  widget.pagesHolder.taskEventList
                       ?.getGlobalKey()
                       .currentState
-                      ?.updateTaskEvent(taskEvent, taskEvent, selectItem: widget.selectInListWhenChanged);
+                      ?.updateTaskEvent(taskEvent, taskEvent,
+                          selectItem: widget.selectInListWhenChanged);
                   if (widget.onTaskEventChanged != null)
                     widget.onTaskEventChanged!(taskEvent);
-
                 },
-                child: Icon(taskEvent.favorite ? Icons.favorite : Icons.favorite_border,
-                    color: isDarkMode(context) ? BUTTON_COLOR.shade300 : BUTTON_COLOR),
+                child: Icon(
+                    taskEvent.favorite ? Icons.favorite : Icons.favorite_border,
+                    color: isDarkMode(context)
+                        ? BUTTON_COLOR.shade300
+                        : BUTTON_COLOR),
               ),
             ],
           ),
-          ButtonBar(
-              alignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    final scheduledTaskEvents = await ScheduledTaskEventRepository.findByTaskEventId(taskEvent.id);
-                    final scheduledTaskIds = scheduledTaskEvents.map((e) => e.scheduledTaskId);
+          OverflowBar(alignment: MainAxisAlignment.center, children: [
+            TextButton(
+              onPressed: () async {
+                final scheduledTaskEvents =
+                    await ScheduledTaskEventRepository.findByTaskEventId(
+                        taskEvent.id);
+                final scheduledTaskIds =
+                    scheduledTaskEvents.map((e) => e.scheduledTaskId);
 
-                    if (taskEvent.originTemplateId != null) {
-                      TemplateRepository.findById(taskEvent.originTemplateId!).then((template) {
-                        _showInfoDialog(taskEvent, template, scheduledTaskIds);
-                      });
-                    }
-                    else {
-                      _showInfoDialog(taskEvent, null, scheduledTaskIds);
-                    }
-                  },
-                  child: Icon(Icons.info_outline,
-                      color: isDarkMode(context) ? BUTTON_COLOR.shade300 : BUTTON_COLOR),
-                ),
-              ]),
-          ButtonBar(
+                if (taskEvent.originTemplateId != null) {
+                  TemplateRepository.findById(taskEvent.originTemplateId!)
+                      .then((template) {
+                    _showInfoDialog(taskEvent, template, scheduledTaskIds);
+                  });
+                } else {
+                  _showInfoDialog(taskEvent, null, scheduledTaskIds);
+                }
+              },
+              child: Icon(Icons.info_outline,
+                  color: isDarkMode(context)
+                      ? BUTTON_COLOR.shade300
+                      : BUTTON_COLOR),
+            ),
+          ]),
+          OverflowBar(
             alignment: MainAxisAlignment.end,
             children: [
               TextButton(
                 onPressed: () async {
-                  TaskEvent? changedTaskEvent = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  TaskEvent? changedTaskEvent = await Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
                     return TaskEventForm(
                         formTitle: translate('forms.task_event.change.title',
-                            args: {"title" : taskEvent.translatedTitle}),
+                            args: {"title": taskEvent.translatedTitle}),
                         taskEvent: taskEvent);
                   }));
 
                   if (changedTaskEvent != null) {
-                    TaskEventRepository.update(changedTaskEvent).then((updatedTaskEvent) {
-
+                    TaskEventRepository.update(changedTaskEvent)
+                        .then((updatedTaskEvent) {
                       setState(() {
                         taskEvent.apply(updatedTaskEvent);
                       });
 
-                      toastInfo(context, translate('forms.task_event.change.success',
-                          args: {"title" : updatedTaskEvent.translatedTitle}));
+                      toastInfo(
+                          context,
+                          translate('forms.task_event.change.success', args: {
+                            "title": updatedTaskEvent.translatedTitle
+                          }));
 
-                      widget.pagesHolder
-                          .taskEventList
+                      widget.pagesHolder.taskEventList
                           ?.getGlobalKey()
                           .currentState
-                          ?.updateTaskEvent(taskEvent, updatedTaskEvent, selectItem: widget.selectInListWhenChanged);
-
+                          ?.updateTaskEvent(taskEvent, updatedTaskEvent,
+                              selectItem: widget.selectInListWhenChanged);
 
                       if (widget.onTaskEventChanged != null)
                         widget.onTaskEventChanged!(updatedTaskEvent);
@@ -247,7 +267,9 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
                   }
                 },
                 child: Icon(Icons.edit,
-                    color: isDarkMode(context) ? BUTTON_COLOR.shade300 : BUTTON_COLOR),
+                    color: isDarkMode(context)
+                        ? BUTTON_COLOR.shade300
+                        : BUTTON_COLOR),
               ),
               TextButton(
                 onPressed: () {
@@ -255,23 +277,24 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
                     context,
                     translate('pages.journal.action.deletion.title'),
                     translate('pages.journal.action.deletion.message',
-                        args: {"title" : taskEvent.translatedTitle}),
+                        args: {"title": taskEvent.translatedTitle}),
                     icon: const Icon(Icons.warning_amber_outlined),
                     okPressed: () {
                       TaskEventRepository.delete(taskEvent).then(
-                            (_) {
-                          ScheduledTaskEventRepository
-                              .findByTaskEventId(taskEvent.id!)
+                        (_) {
+                          ScheduledTaskEventRepository.findByTaskEventId(
+                                  taskEvent.id!)
                               .then((scheduledTaskEvent) {
                             scheduledTaskEvent.forEach((scheduledTaskEvent) {
-                                ScheduledTaskEventRepository.delete(
-                                    scheduledTaskEvent);
+                              ScheduledTaskEventRepository.delete(
+                                  scheduledTaskEvent);
                             });
                           });
-                          toastInfo(context, translate('pages.journal.action.deletion.success',
-                              args: {"title" : taskEvent.translatedTitle}));
-                          widget.pagesHolder
-                              .taskEventList
+                          toastInfo(
+                              context,
+                              translate('pages.journal.action.deletion.success',
+                                  args: {"title": taskEvent.translatedTitle}));
+                          widget.pagesHolder.taskEventList
                               ?.getGlobalKey()
                               .currentState
                               ?.removeTaskEvent(taskEvent);
@@ -280,15 +303,16 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
                             widget.onTaskEventDeleted!(taskEvent);
 
                           Navigator.pop(context);
-                       },
+                        },
                       );
                     },
-                    cancelPressed: () =>
-                        Navigator.pop(context),
+                    cancelPressed: () => Navigator.pop(context),
                   );
                 },
                 child: Icon(Icons.delete,
-                    color: isDarkMode(context) ? BUTTON_COLOR.shade300 : BUTTON_COLOR),
+                    color: isDarkMode(context)
+                        ? BUTTON_COLOR.shade300
+                        : BUTTON_COLOR),
               ),
             ],
           ),
@@ -298,14 +322,15 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
     return expansionWidgets;
   }
 
-
-  Future<void> _showInfoDialog(TaskEvent taskEvent, Template? originTemplate, Iterable<int> scheduledTaskIds) async {
-    final associatedSchedulesWidgets = <Widget>[boldedText("${translate('pages.journal.details.associated_schedule')}: ")];
+  Future<void> _showInfoDialog(TaskEvent taskEvent, Template? originTemplate,
+      Iterable<int> scheduledTaskIds) async {
+    final associatedSchedulesWidgets = <Widget>[
+      boldedText("${translate('pages.journal.details.associated_schedule')}: ")
+    ];
     if (scheduledTaskIds.isEmpty) {
       final widget = _createScheduleInfo(null);
       associatedSchedulesWidgets.add(widget);
-    }
-    else {
+    } else {
       for (final id in scheduledTaskIds) {
         final schedule = await ScheduledTaskRepository.findById(id);
 
@@ -317,59 +342,70 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
     }
 
     final alert = AlertDialog(
-      title: Row(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-          child: const Icon(Icons.info_outline),
-        ),
-        Text(translate('pages.journal.details.title'))
-      ],),
+      title: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+            child: const Icon(Icons.info_outline),
+          ),
+          Text(translate('pages.journal.details.title'))
+        ],
+      ),
       content: Wrap(
         children: [
           Wrap(
             children: [
-              boldedText("${translate('pages.journal.details.attrib_title')}: "),
+              boldedText(
+                  "${translate('pages.journal.details.attrib_title')}: "),
               wrappedText(taskEvent.translatedTitle),
             ],
           ),
           Row(
             children: [
-              boldedText("${translate('pages.journal.details.attrib_category')}: "),
-              TaskEventWidget.taskGroupPresentation(context, taskEvent) ?? Text("-${translate('pages.journal.details.value_uncategorized')}-"),
+              boldedText(
+                  "${translate('pages.journal.details.attrib_category')}: "),
+              TaskEventWidget.taskGroupPresentation(context, taskEvent) ??
+                  Text(
+                      "-${translate('pages.journal.details.value_uncategorized')}-"),
             ],
           ),
           Divider(),
           Row(
             children: [
-              boldedText("${translate('pages.journal.details.attrib_created_at')}: "),
+              boldedText(
+                  "${translate('pages.journal.details.attrib_created_at')}: "),
               Spacer(),
               Text(formatToDateTime(taskEvent.createdAt, context)),
             ],
           ),
           Row(
             children: [
-              boldedText("${translate('pages.journal.details.attrib_started_at')}: "),
+              boldedText(
+                  "${translate('pages.journal.details.attrib_started_at')}: "),
               Spacer(),
               Text(formatToDateTime(taskEvent.startedAt, context)),
             ],
           ),
           Row(
             children: [
-              boldedText("${translate('pages.journal.details.attrib_finished_at')}: "),
+              boldedText(
+                  "${translate('pages.journal.details.attrib_finished_at')}: "),
               Spacer(),
               Text(formatToDateTime(taskEvent.finishedAt, context)),
             ],
           ),
           Wrap(
             children: [
-              boldedText("${translate('pages.journal.details.attrib_duration')}: "),
+              boldedText(
+                  "${translate('pages.journal.details.attrib_duration')}: "),
               Text(" " + formatTrackingDuration(taskEvent.duration)),
             ],
           ),
           Divider(),
           Wrap(
             children: [
-              boldedText("${translate('pages.journal.details.associated_task')}: "),
+              boldedText(
+                  "${translate('pages.journal.details.associated_task')}: "),
               _createOriginTemplateInfo(originTemplate),
             ],
           ),
@@ -379,7 +415,7 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
           ),
         ],
       ),
-    );  // show the dialog
+    ); // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -388,39 +424,43 @@ class TaskEventWidgetState extends State<TaskEventWidget> {
     );
   }
 
-
   Widget _createOriginTemplateInfo(Template? originTemplate) {
     if (originTemplate == null) {
       return Text("-${translate('pages.journal.details.value_none')}-");
     }
-    final originTaskGroup = TaskGroupRepository.findByIdFromCache(originTemplate.taskGroupId);
+    final originTaskGroup =
+        TaskGroupRepository.findByIdFromCache(originTemplate.taskGroupId);
     return Column(
       children: [
         Row(
           children: [
-            originTaskGroup.getTaskGroupRepresentation(context, useIconColor: true),
+            originTaskGroup.getTaskGroupRepresentation(context,
+                useIconColor: true),
             const Text(" /"),
           ],
         ),
         wrappedText(originTemplate.translatedTitle)
-      ],);
+      ],
+    );
   }
 
   Widget _createScheduleInfo(ScheduledTask? scheduledTask) {
     if (scheduledTask == null) {
       return Text("-${translate('pages.journal.details.value_none')}-");
     }
-    final originTaskGroup = TaskGroupRepository.findByIdFromCache(scheduledTask.taskGroupId);
+    final originTaskGroup =
+        TaskGroupRepository.findByIdFromCache(scheduledTask.taskGroupId);
     return Column(
       children: [
         Row(
           children: [
-            originTaskGroup.getTaskGroupRepresentation(context, useIconColor: true),
+            originTaskGroup.getTaskGroupRepresentation(context,
+                useIconColor: true),
             const Text(" /"),
           ],
         ),
         wrappedText(scheduledTask.translatedTitle)
-      ],);
+      ],
+    );
   }
-
 }

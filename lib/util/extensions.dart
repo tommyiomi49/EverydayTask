@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,23 +9,33 @@ extension StringExtension on String {
 
 extension DoubleExtension on double {
   double min(double minValue) {
-    if (this < minValue) return minValue;
-    else return this;
-  }  
+    if (this < minValue)
+      return minValue;
+    else
+      return this;
+  }
+
   double max(double maxValue) {
-    if (this > maxValue) return maxValue;
-    else return this;
+    if (this > maxValue)
+      return maxValue;
+    else
+      return this;
   }
 }
 
 extension DurationExtension on Duration {
   Duration min(Duration minValue) {
-    if (this.inSeconds < minValue.inSeconds) return minValue;
-    else return this;
+    if (this.inSeconds < minValue.inSeconds)
+      return minValue;
+    else
+      return this;
   }
+
   Duration max(Duration maxValue) {
-    if (this.inSeconds > maxValue.inSeconds) return maxValue;
-    else return this;
+    if (this.inSeconds > maxValue.inSeconds)
+      return maxValue;
+    else
+      return this;
   }
 }
 
@@ -44,7 +52,7 @@ extension ListExtension<E> on List<E> {
 }
 
 extension TimeOfDayExtension on TimeOfDay {
-  double toDouble() => this.hour + this.minute/60.0;
+  double toDouble() => this.hour + this.minute / 60.0;
   int toMinutes() => this.hour * 60 + this.minute;
 }
 

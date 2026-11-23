@@ -1,12 +1,9 @@
 import 'package:floor/floor.dart';
-import 'package:personaltasklogger/db/entity/SequencesEntity.dart';
-import 'package:personaltasklogger/db/entity/TaskTemplateEntity.dart';
 
 import '../entity/KeyValueEntity.dart';
 
 @dao
 abstract class KeyValueDao {
-
   @Query('SELECT * FROM KeyValueEntity WHERE id = :id')
   Stream<KeyValueEntity?> findById(int id);
 
@@ -25,6 +22,4 @@ abstract class KeyValueDao {
 
   @delete
   Future<int> deleteKeyValue(KeyValueEntity entity);
-
 }
-

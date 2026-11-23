@@ -11,16 +11,13 @@ final PRIMARY_COLOR = Colors.green[50]!;
 final BUTTON_COLOR = Colors.blue;
 final ACCENT_COLOR = Colors.lime[800];
 
-
 class PersonalTaskLoggerApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
     if (mediaQueryData.disableAnimations) {
       timeDilation = 0.0001;
     }
-
 
     var localizationDelegate = LocalizedApp.of(context).delegate;
     return AppBuilder(builder: (context) {
@@ -40,62 +37,66 @@ class PersonalTaskLoggerApp extends StatelessWidget {
               brightness: Brightness.dark,
               primaryColor: PRIMARY_COLOR,
               checkboxTheme: CheckboxThemeData(
-                fillColor: MaterialStateColor.resolveWith((states) => states.contains(MaterialState.selected) ? BUTTON_COLOR : Colors.grey),
+                fillColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? BUTTON_COLOR
+                        : Colors.grey),
               ),
               switchTheme: SwitchThemeData(
-                thumbColor: MaterialStateColor.resolveWith((states) => states.contains(MaterialState.selected) ? Colors.white : Colors.grey),
-                trackColor: MaterialStateColor.resolveWith((states) => states.contains(MaterialState.selected) ? BUTTON_COLOR : Colors.grey),
+                thumbColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? Colors.white
+                        : Colors.grey),
+                trackColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? BUTTON_COLOR
+                        : Colors.grey),
               ),
-             radioTheme: RadioThemeData(
-               overlayColor: MaterialStateColor.resolveWith((states) => states.contains(MaterialState.selected) ? Colors.white : Colors.grey),
-               fillColor: MaterialStateColor.resolveWith((states) => states.contains(MaterialState.selected) ? BUTTON_COLOR : Colors.grey),
-             ),
+              radioTheme: RadioThemeData(
+                overlayColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? Colors.white
+                        : Colors.grey),
+                fillColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? BUTTON_COLOR
+                        : Colors.grey),
+              ),
               buttonTheme: ButtonThemeData(
-                colorScheme: ColorScheme.dark(
-                  background: BUTTON_COLOR,
-                )
-              ),
+                  colorScheme: ColorScheme.dark(
+                surface: BUTTON_COLOR,
+              )),
               floatingActionButtonTheme: FloatingActionButtonThemeData(
-                foregroundColor: Colors.white,
-                backgroundColor: BUTTON_COLOR
-              ),
+                  foregroundColor: Colors.white, backgroundColor: BUTTON_COLOR),
               appBarTheme: AppBarTheme(
-                  color: PRIMARY_COLOR,
-                  foregroundColor: Colors.black
-              )
-            // accentColor: Colors.green,
+                  backgroundColor: PRIMARY_COLOR, foregroundColor: Colors.black)
+              // accentColor: Colors.green,
 
-          ),
+              ),
           theme: ThemeData(
-            useMaterial3: false,
-            brightness: Brightness.light,
-            primaryColor: PRIMARY_COLOR,
-            primarySwatch: BUTTON_COLOR,
+              useMaterial3: false,
+              brightness: Brightness.light,
+              primaryColor: PRIMARY_COLOR,
+              primarySwatch: BUTTON_COLOR,
+              appBarTheme: AppBarTheme(
+                  backgroundColor: PRIMARY_COLOR, foregroundColor: Colors.black)
+              // accentColor: Colors.green,
 
-            appBarTheme: AppBarTheme(
-              color: PRIMARY_COLOR,
-              foregroundColor: Colors.black
-            )
-           // accentColor: Colors.green,
-
-          ),
-          themeMode: PreferenceService().darkTheme ? ThemeMode.dark : ThemeMode.light,
+              ),
+          themeMode:
+              PreferenceService().darkTheme ? ThemeMode.dark : ThemeMode.light,
           home: PersonalTaskLoggerScaffold(),
         ),
       );
-    }
-  );
+    });
   }
-
 }
 
 // from https://hillel.dev/2018/08/15/flutter-how-to-rebuild-the-entire-app-to-change-the-theme-or-locale/
 class AppBuilder extends StatefulWidget {
   final Function(BuildContext) builder;
 
-  const AppBuilder(
-      {Key? key, required this.builder})
-      : super(key: key);
+  const AppBuilder({Key? key, required this.builder}) : super(key: key);
 
   @override
   AppBuilderState createState() => new AppBuilderState();
@@ -106,7 +107,6 @@ class AppBuilder extends StatefulWidget {
 }
 
 class AppBuilderState extends State<AppBuilder> {
-
   @override
   Widget build(BuildContext context) {
     return widget.builder(context);
@@ -115,7 +115,4 @@ class AppBuilderState extends State<AppBuilder> {
   void rebuild() {
     setState(() {});
   }
-
-
 }
-

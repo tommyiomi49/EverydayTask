@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -13,7 +11,8 @@ import 'package:personaltasklogger/util/units.dart';
 import 'i18n.dart';
 
 DateTime fillToWholeDate(DateTime dateTime) {
-  return DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59, 59, 9999);
+  return DateTime(
+      dateTime.year, dateTime.month, dateTime.day, 23, 59, 59, 9999);
 }
 
 DateTime truncToDate(DateTime dateTime) {
@@ -21,7 +20,8 @@ DateTime truncToDate(DateTime dateTime) {
 }
 
 DateTime truncToMinutes(DateTime dateTime) {
-  return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour, dateTime.minute);
+  return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour,
+      dateTime.minute);
 }
 
 String formatToDateOrWord(DateTime dateTime, BuildContext context,
@@ -31,7 +31,9 @@ String formatToDateOrWord(DateTime dateTime, BuildContext context,
     return makeWhenOnLowerCase ? word.toLowerCase() : word;
   }
   if (withPreposition) {
-    return translate('common.words.on_for_dates') + " " + formatToDate(dateTime, context);
+    return translate('common.words.on_for_dates') +
+        " " +
+        formatToDate(dateTime, context);
   }
   return formatToDate(dateTime, context);
 }
@@ -55,30 +57,33 @@ String? formatToWord(DateTime dateTime) {
   return null;
 }
 
-String formatToDate(DateTime dateTime, BuildContext context, {bool? showWeekdays, bool hideYear = false}) {
+String formatToDate(DateTime dateTime, BuildContext context,
+    {bool? showWeekdays, bool hideYear = false}) {
   final preferenceService = PreferenceService();
   final prefShowWeekdays = preferenceService.showWeekdays;
   final dateFormatSelection = preferenceService.dateFormatSelection;
-  return formatToDateWithFormatSelection(dateTime, context, dateFormatSelection, showWeekdays ?? prefShowWeekdays, hideYear);
+  return formatToDateWithFormatSelection(dateTime, context, dateFormatSelection,
+      showWeekdays ?? prefShowWeekdays, hideYear);
 }
 
-formatToDateWithFormatSelection(DateTime dateTime, BuildContext context, int dateFormatSelection, bool showWeekdays, bool hideYear) {
+formatToDateWithFormatSelection(DateTime dateTime, BuildContext context,
+    int dateFormatSelection, bool showWeekdays, bool hideYear) {
   final isSameYear = dateTime.year == DateTime.now().year;
-  final formatter = getDateFormat(context, dateFormatSelection, showWeekdays, isSameYear || hideYear);
+  final formatter = getDateFormat(
+      context, dateFormatSelection, showWeekdays, isSameYear || hideYear);
   return formatter.format(dateTime);
 }
 
-
 // day: 0..6
 String formatAllYearDate(AllYearDate allYearDate, BuildContext context) {
-  final date = DateTime(2024, allYearDate.month.index + 1, allYearDate.day); // leap year needed to display 29th Feb
+  final date = DateTime(2024, allYearDate.month.index + 1,
+      allYearDate.day); // leap year needed to display 29th Feb
   return formatToDate(date, context, showWeekdays: false, hideYear: true);
 }
 
 // day: 0..6
 String getDayOfMonth(int day, BuildContext context) {
   return "${translate("common.units.day.one")} $day";
-
 }
 
 // day: 0..6
@@ -101,29 +106,32 @@ String getMonthOf(int month, BuildContext context) {
   return DateFormat.MMM(locale).dateSymbols.MONTHS[month];
 }
 
-getDateFormat(BuildContext context, int dateFormatSelection, bool showWeekdays, bool withoutYear) {
-
-   final locale = currentLocale(context).toString();
+getDateFormat(BuildContext context, int dateFormatSelection, bool showWeekdays,
+    bool withoutYear) {
+  final locale = currentLocale(context).toString();
   initializeDateFormatting(locale);
   if (showWeekdays) {
     final yMEd = withoutYear ? DateFormat.MEd(locale) : DateFormat.yMEd(locale);
-    final yMMMEd = withoutYear ? DateFormat.MMMEd(locale) : DateFormat.yMMMEd(locale);
-    final yMMMMEEEEd = withoutYear ? DateFormat.MMMMEEEEd(locale) : DateFormat.yMMMMEEEEd(locale);
+    final yMMMEd =
+        withoutYear ? DateFormat.MMMEd(locale) : DateFormat.yMMMEd(locale);
+    final yMMMMEEEEd = withoutYear
+        ? DateFormat.MMMMEEEEd(locale)
+        : DateFormat.yMMMMEEEEd(locale);
     final isoWithE = DateFormat('E, yyyy-MM-dd');
     final withWeekdays = [yMEd, yMMMEd, yMMMMEEEEd, isoWithE];
 
     return withWeekdays.elementAt(dateFormatSelection);
-  }
-  else {
+  } else {
     final yMd = withoutYear ? DateFormat.Md(locale) : DateFormat.yMd(locale);
-    final yMMMd = withoutYear ? DateFormat.MMMd(locale) : DateFormat.yMMMd(locale);
-    final yMMMMd = withoutYear ? DateFormat.MMMMd(locale) : DateFormat.yMMMMd(locale);
+    final yMMMd =
+        withoutYear ? DateFormat.MMMd(locale) : DateFormat.yMMMd(locale);
+    final yMMMMd =
+        withoutYear ? DateFormat.MMMMd(locale) : DateFormat.yMMMMd(locale);
     final iso = DateFormat('yyyy-MM-dd');
     final withoutWeekdays = [yMd, yMMMd, yMMMMd, iso];
 
     return withoutWeekdays.elementAt(dateFormatSelection);
   }
-
 }
 
 String formatToDateTime(DateTime dateTime, BuildContext context) {
@@ -147,11 +155,9 @@ String formatTrackingDuration(Duration duration) {
 
   if (hours.value > 0) {
     return "$hours $minutes $seconds";
-  }
-  else if (minutes.value > 0) {
+  } else if (minutes.value > 0) {
     return "$minutes $seconds";
-  }
-  else {
+  } else {
     return "$seconds";
   }
 }
@@ -163,13 +169,12 @@ String formatToDateTimeRange(
     Duration duration,
     DateTime? trackingFinishedAt,
     bool showAround) {
-
-
   final sb = StringBuffer();
-  if (showAround && aroundStartedAt != AroundWhenAtDay.NOW && aroundStartedAt != AroundWhenAtDay.CUSTOM) {
+  if (showAround &&
+      aroundStartedAt != AroundWhenAtDay.NOW &&
+      aroundStartedAt != AroundWhenAtDay.CUSTOM) {
     sb.write(When.fromWhenAtDayToString(aroundStartedAt));
-  }
-  else {
+  } else {
     sb.write(formatToTime(startedAt));
     sb.write(" - ");
     if (showAround && aroundDurationHours != AroundDurationHours.CUSTOM) {
@@ -182,24 +187,21 @@ String formatToDateTimeRange(
   return sb.toString();
 }
 
-String formatToDuration(
-    AroundDurationHours aroundDurationHours,
-    Duration duration,
-    bool showAround) {
-
+String formatToDuration(AroundDurationHours aroundDurationHours,
+    Duration duration, bool showAround) {
   final sb = StringBuffer();
 
   if (showAround && aroundDurationHours != AroundDurationHours.CUSTOM) {
     sb.write(When.fromDurationHoursToString(aroundDurationHours));
-  }
-  else {
+  } else {
     sb.write(formatDuration(duration));
   }
 
   return sb.toString();
 }
 
-String formatDuration(Duration duration, [bool? avoidNegativeDurationString, Clause? clause]) {
+String formatDuration(Duration duration,
+    [bool? avoidNegativeDurationString, Clause? clause]) {
   if (avoidNegativeDurationString ?? false) {
     duration = duration.abs();
   }
@@ -208,64 +210,57 @@ String formatDuration(Duration duration, [bool? avoidNegativeDurationString, Cla
   var minutes = Minutes(duration.inMinutes, clause);
   var seconds = Seconds(duration.inSeconds, clause);
   var durationText = minutes.toString();
-  if (days.value.abs() >= 700) { // more than almost 2 years
+  if (days.value.abs() >= 700) {
+    // more than almost 2 years
     var aroundYears = (days.value / 365).round();
     var years = Years(aroundYears, clause);
     durationText = "${translate('common.words.around')} $years";
-  }
-  else if (days.value.abs() >= 365) { // more than 1 year
+  } else if (days.value.abs() >= 365) {
+    // more than 1 year
     var years = Years(days.value ~/ 365, clause);
     var aroundMonths = ((days.value - (365 * years.value)) / 30).round();
     var remainingAroundMonths = Months(aroundMonths, clause);
     if (remainingAroundMonths.value != 0) {
-      durationText = "${translate('common.words.around')} $years ${translate('common.words.and')} $remainingAroundMonths";
-    }
-    else {
+      durationText =
+          "${translate('common.words.around')} $years ${translate('common.words.and')} $remainingAroundMonths";
+    } else {
       durationText = "${translate('common.words.around')} $years";
     }
-  }
-  else if (days.value.abs() >= 80) {
+  } else if (days.value.abs() >= 80) {
     var aroundMonths = (days.value / 30).round();
     var months = Months(aroundMonths, clause);
     durationText = "${translate('common.words.around')} $months";
-  }
-  else if (days.value.abs() >= 7) {
+  } else if (days.value.abs() >= 7) {
     var remainingDays = Days(days.value % 7, clause);
     var weeks = Weeks(days.value ~/ 7, clause);
     if (remainingDays.value != 0) {
       durationText = "$weeks ${translate('common.words.and')} $remainingDays";
-    }
-    else {
+    } else {
       durationText = weeks.toString();
     }
-  }
-  else if (hours.value.abs() >= 24) {
+  } else if (hours.value.abs() >= 24) {
     var remainingHours = Hours(hours.value % 24, clause);
     if (remainingHours.value != 0) {
       durationText = "$days ${translate('common.words.and')} $remainingHours";
-    }
-    else {
+    } else {
       durationText = days.toString();
     }
-  }
-  else if (minutes.value.abs() >= 60) {
+  } else if (minutes.value.abs() >= 60) {
     var remainingMinutes = Minutes(minutes.value % 60, clause);
     if (remainingMinutes.value != 0) {
-      durationText = "$hours ${translate('common.words.and')} $remainingMinutes";
-    }
-    else {
+      durationText =
+          "$hours ${translate('common.words.and')} $remainingMinutes";
+    } else {
       durationText = hours.toString();
     }
-  }
-  else {
+  } else {
     var remainingSeconds = Seconds(seconds.value % 60, clause);
     if (minutes.value == 0) {
       durationText = seconds.toString();
-    }
-    else if (remainingSeconds.value != 0) {
-      durationText = "$minutes ${translate('common.words.and')} $remainingSeconds";
-    }
-    else {
+    } else if (remainingSeconds.value != 0) {
+      durationText =
+          "$minutes ${translate('common.words.and')} $remainingSeconds";
+    } else {
       durationText = minutes.toString();
     }
   }
@@ -282,15 +277,16 @@ String formatTimeOfDay(TimeOfDay timeOfDay) {
   return "${timeOfDay.hour}:${formatter.format(timeOfDay.minute)}";
 }
 
-
 bool isAfterTomorrow(DateTime? dateTime) {
   if (dateTime == null) return false;
-  return truncToDate(dateTime) == truncToDate(DateTime.now().add(Duration(days: 2)));
+  return truncToDate(dateTime) ==
+      truncToDate(DateTime.now().add(Duration(days: 2)));
 }
 
 bool isTomorrow(DateTime? dateTime) {
   if (dateTime == null) return false;
-  return truncToDate(dateTime) == truncToDate(DateTime.now().add(Duration(days: 1)));
+  return truncToDate(dateTime) ==
+      truncToDate(DateTime.now().add(Duration(days: 1)));
 }
 
 bool isToday(DateTime? dateTime) {
@@ -300,12 +296,14 @@ bool isToday(DateTime? dateTime) {
 
 bool isYesterday(DateTime? dateTime) {
   if (dateTime == null) return false;
-  return truncToDate(dateTime) == truncToDate(DateTime.now().subtract(Duration(days: 1)));
+  return truncToDate(dateTime) ==
+      truncToDate(DateTime.now().subtract(Duration(days: 1)));
 }
 
 bool isBeforeYesterday(DateTime? dateTime) {
   if (dateTime == null) return false;
-  return truncToDate(dateTime) == truncToDate(DateTime.now().subtract(Duration(days: 2)));
+  return truncToDate(dateTime) ==
+      truncToDate(DateTime.now().subtract(Duration(days: 2)));
 }
 
 WhenOnDatePast fromDateTimeToWhenOnDatePast(DateTime dateTime) {
@@ -319,6 +317,7 @@ WhenOnDatePast fromDateTimeToWhenOnDatePast(DateTime dateTime) {
     return WhenOnDatePast.CUSTOM;
   }
 }
+
 WhenOnDateFuture fromDateTimeToWhenOnDateFuture(DateTime dateTime) {
   if (isToday(dateTime)) {
     return WhenOnDateFuture.TODAY;

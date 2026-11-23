@@ -32,11 +32,8 @@ import '../components/TaskEventWidget.dart';
 import 'ScheduledTaskList.dart';
 import 'TaskEventList.dart';
 
-
-
 @immutable
 class CalendarPage extends StatefulWidget {
-
   final PagesHolder pagesHolder;
 
   CalendarPage(this.pagesHolder);
@@ -45,16 +42,15 @@ class CalendarPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _CalendarPageStatus();
   }
-
 }
 
-enum EventType {EVENT, SCHEDULE, BOTH, NONE}
-enum CalendarMode {DAY, WEEK, MONTH}
+enum EventType { EVENT, SCHEDULE, BOTH, NONE }
+
+enum CalendarMode { DAY, WEEK, MONTH }
 
 final scheduledTaskWidgetKey = GlobalKey<ScheduledTaskWidgetState>();
 
 class _CalendarPageStatus extends State<CalendarPage> {
-
   static const minCalendarDuration = Duration(minutes: 20);
   static const defaultScale = 1.2;
 
@@ -77,7 +73,6 @@ class _CalendarPageStatus extends State<CalendarPage> {
   List<CalendarEventData<TaskEvent>> _taskEventCalendarEvents = [];
   List<CalendarEventData<ScheduledTask>> _scheduledTaskCalendarEvents = [];
 
-
   double _baseScaleFactor = defaultScale;
   double _scaleFactor = defaultScale;
 
@@ -89,15 +84,16 @@ class _CalendarPageStatus extends State<CalendarPage> {
 
   bool _isNotificationsDisabled = false;
 
-
   @override
   void initState() {
     super.initState();
 
     _eventTypeSelection = [true, true];
-    _calendarModeSelection = List.generate(CalendarMode.values.length, (index) => index == _calendarMode.index);
+    _calendarModeSelection = List.generate(
+        CalendarMode.values.length, (index) => index == _calendarMode.index);
 
-    final fTaskEvents = _loadFirstTaskEvents(CalendarConstants.maxDate, ChronologicalPaging.maxId);
+    final fTaskEvents = _loadFirstTaskEvents(
+        CalendarConstants.maxDate, ChronologicalPaging.maxId);
     final fScheduledTasks = _loadSchedulesTasks();
     Future.wait([fTaskEvents, fScheduledTasks]).then((events) {
       final taskEvents = events.first;
@@ -109,7 +105,6 @@ class _CalendarPageStatus extends State<CalendarPage> {
       _loadRemainingTaskEvents(taskEvents.lastOrNull as TaskEvent?);
 
       _scrollToTime(DateTime.now());
-
     });
 
     PreferenceService().getBool(PREF_DISABLE_NOTIFICATIONS).then((value) {
@@ -120,25 +115,26 @@ class _CalendarPageStatus extends State<CalendarPage> {
       });
     });
 
-    PreferenceService().getInt(PreferenceService.DATA_CURRENT_CALENDAR_MODE).then((value) {
+    PreferenceService()
+        .getInt(PreferenceService.DATA_CURRENT_CALENDAR_MODE)
+        .then((value) {
       if (value != null) {
         _updateCalendarMode(CalendarMode.values[value]);
       }
     });
-    PreferenceService().getInt(PreferenceService.DATA_CURRENT_EVENT_TYPE).then((value) {
+    PreferenceService()
+        .getInt(PreferenceService.DATA_CURRENT_EVENT_TYPE)
+        .then((value) {
       if (value != null) {
         setState(() {
           _eventType = EventType.values[value];
           if (_eventType == EventType.EVENT) {
             _eventTypeSelection = [true, false];
-          }
-          else if (_eventType == EventType.SCHEDULE) {
+          } else if (_eventType == EventType.SCHEDULE) {
             _eventTypeSelection = [false, true];
-          }
-          else if (_eventType == EventType.BOTH) {
+          } else if (_eventType == EventType.BOTH) {
             _eventTypeSelection = [true, true];
-          }
-          else {
+          } else {
             // if NONE was stored for some reason, change to BOTH to not display nothing
             _eventType = EventType.BOTH;
             _eventTypeSelection = [true, true];
@@ -157,11 +153,12 @@ class _CalendarPageStatus extends State<CalendarPage> {
         debugPrint(".. ST Widget refresh #${_timer.tick} ..");
       });
     });
-
   }
 
-  _mapAndAddScheduledTasksToCalendar(List<TitleAndDescription> scheduledTasks) async {
-    final eventData = await Future.wait(scheduledTasks.map((e) => _mapScheduledTaskToCalendarEventData(e as ScheduledTask)));
+  _mapAndAddScheduledTasksToCalendar(
+      List<TitleAndDescription> scheduledTasks) async {
+    final eventData = await Future.wait(scheduledTasks
+        .map((e) => _mapScheduledTaskToCalendarEventData(e as ScheduledTask)));
     _scheduledTaskCalendarEvents.addAll(eventData);
     if (_eventType == EventType.SCHEDULE || _eventType == EventType.BOTH) {
       calendarController.addAll(eventData);
@@ -175,31 +172,35 @@ class _CalendarPageStatus extends State<CalendarPage> {
   }
 
   void _addFutureScheduledTasks(ScheduledTask scheduledTask) {
-    if (scheduledTask.schedule.repetitionMode != RepetitionMode.ONE_TIME
-        && scheduledTask.lastScheduledEventOn != null
-        && !scheduledTask.isPaused
-        && scheduledTask.active) {
-      _mapAndAddFutureScheduledTaskToCalendar(scheduledTask, scheduledTask.lastScheduledEventOn!, 1);
+    if (scheduledTask.schedule.repetitionMode != RepetitionMode.ONE_TIME &&
+        scheduledTask.lastScheduledEventOn != null &&
+        !scheduledTask.isPaused &&
+        scheduledTask.active) {
+      _mapAndAddFutureScheduledTaskToCalendar(
+          scheduledTask, scheduledTask.lastScheduledEventOn!, 1);
     }
   }
 
-  _mapAndAddFutureScheduledTaskToCalendar(ScheduledTask scheduledTask, DateTime dueOn, int level) async {
+  _mapAndAddFutureScheduledTaskToCalendar(
+      ScheduledTask scheduledTask, DateTime dueOn, int level) async {
     if (level >= 100) {
       //break
       return;
     }
     final wrapper = FutureScheduledTask(
-        id: scheduledTask.id,
-        taskGroupId: scheduledTask.taskGroupId,
-        templateId: scheduledTask.templateId,
-        title: kReleaseMode ? scheduledTask.translatedTitle : "${scheduledTask.translatedTitle} (#$level)",
-        description: scheduledTask.translatedDescription,
-        createdAt: scheduledTask.createdAt,
-        schedule: scheduledTask.schedule,
-        active: scheduledTask.active,
-        pausedAt: scheduledTask.pausedAt,
-        important: scheduledTask.important,
-        oneTimeCompletedOn: scheduledTask.oneTimeCompletedOn,
+      id: scheduledTask.id,
+      taskGroupId: scheduledTask.taskGroupId,
+      templateId: scheduledTask.templateId,
+      title: kReleaseMode
+          ? scheduledTask.translatedTitle
+          : "${scheduledTask.translatedTitle} (#$level)",
+      description: scheduledTask.translatedDescription,
+      createdAt: scheduledTask.createdAt,
+      schedule: scheduledTask.schedule,
+      active: scheduledTask.active,
+      pausedAt: scheduledTask.pausedAt,
+      important: scheduledTask.important,
+      oneTimeCompletedOn: scheduledTask.oneTimeCompletedOn,
     );
     wrapper.lastScheduledEventOn = scheduledTask.getNextScheduleAfter(dueOn)!;
     final eventData = await _mapScheduledTaskToCalendarEventData(wrapper);
@@ -208,18 +209,22 @@ class _CalendarPageStatus extends State<CalendarPage> {
       calendarController.add(eventData);
     }
 
-    _mapAndAddFutureScheduledTaskToCalendar(scheduledTask, scheduledTask.getNextScheduleAfter(dueOn)!, level + 1);
+    _mapAndAddFutureScheduledTaskToCalendar(
+        scheduledTask, scheduledTask.getNextScheduleAfter(dueOn)!, level + 1);
   }
 
   _mapAndAddTaskEventsToCalendar(List<TitleAndDescription> taskEvents) async {
-    final eventData = taskEvents.map((e) => _mapTaskEventToCalendarEventData(e as TaskEvent)).toList();
+    final eventData = taskEvents
+        .map((e) => _mapTaskEventToCalendarEventData(e as TaskEvent))
+        .toList();
     _taskEventCalendarEvents.addAll(eventData);
     if (_eventType == EventType.EVENT || _eventType == EventType.BOTH) {
       calendarController.addAll(eventData);
     }
 
     taskEvents.forEach((taskEvent) async {
-      final eventData = _mapTaskEventToCalendarEventData(taskEvent as TaskEvent);
+      final eventData =
+          _mapTaskEventToCalendarEventData(taskEvent as TaskEvent);
       _taskEventCalendarEvents.add(eventData);
       _addToCalendar(eventData);
     });
@@ -228,7 +233,8 @@ class _CalendarPageStatus extends State<CalendarPage> {
   void _loadRemainingTaskEvents(TaskEvent? lastTaskEvent) {
     if (lastTaskEvent != null) {
       debugPrint("load remaining (last id = ${lastTaskEvent.id})");
-      _loadFirstTaskEvents(lastTaskEvent.startedAt, lastTaskEvent.id!).then((taskEvents) {
+      _loadFirstTaskEvents(lastTaskEvent.startedAt, lastTaskEvent.id!)
+          .then((taskEvents) {
         _mapAndAddTaskEventsToCalendar(taskEvents);
         _loadRemainingTaskEvents(taskEvents.lastOrNull as TaskEvent?);
       });
@@ -242,8 +248,10 @@ class _CalendarPageStatus extends State<CalendarPage> {
   }
 
   void _scrollToTime(DateTime date) {
-    calendarDayKey.currentState?.scrollController.jumpTo(_calculateScrollOffset(date));
-    calendarWeekKey.currentState?.scrollController.jumpTo(_calculateScrollOffset(date));
+    calendarDayKey.currentState?.scrollController
+        .jumpTo(_calculateScrollOffset(date));
+    calendarWeekKey.currentState?.scrollController
+        .jumpTo(_calculateScrollOffset(date));
     //calendarMonthKey.currentState?.scrollController.jumpTo(_calculateScrollOffset(date));
   }
 
@@ -269,7 +277,6 @@ class _CalendarPageStatus extends State<CalendarPage> {
                 });
                 _doFilter();
               }),
-
           IconButton(
             icon: Icon(Icons.today),
             onPressed: () async {
@@ -290,7 +297,6 @@ class _CalendarPageStatus extends State<CalendarPage> {
     await _jumpToDateTime(when);
   }
 
-
   void _doFilter() {
     _refreshModelAndFilterCalendar();
   }
@@ -302,13 +308,15 @@ class _CalendarPageStatus extends State<CalendarPage> {
     }
 
     if (_taskFilterSettings.filterByTaskOrTemplate is TaskGroup) {
-      final _taskGroup = _taskFilterSettings.filterByTaskOrTemplate as TaskGroup;
+      final _taskGroup =
+          _taskFilterSettings.filterByTaskOrTemplate as TaskGroup;
       if (taskGroupId == _taskGroup.id) {
         return true;
       }
     }
     if (_taskFilterSettings.filterByTaskOrTemplate is Template) {
-      final filterTemplate = _taskFilterSettings.filterByTaskOrTemplate as Template;
+      final filterTemplate =
+          _taskFilterSettings.filterByTaskOrTemplate as Template;
       if (templateId == null) {
         return false; // remove events with no template at all
       }
@@ -316,30 +324,33 @@ class _CalendarPageStatus extends State<CalendarPage> {
         if (templateId == filterTemplate.tId) {
           return true;
         }
-      }
-      else {
-        final parentTemplateId = TemplateRepository.getParentId(templateId.id); // returns a taskTemplate or null, never a variant
-        if (parentTemplateId == filterTemplate.tId!.id || templateId == filterTemplate.tId) {
+      } else {
+        final parentTemplateId = TemplateRepository.getParentId(
+            templateId.id); // returns a taskTemplate or null, never a variant
+        if (parentTemplateId == filterTemplate.tId!.id ||
+            templateId == filterTemplate.tId) {
           return true;
         }
       }
     }
-    return false; 
+    return false;
   }
 
   Future<void> _jumpToDateTime(DateTime when) async {
     _jumpToDate(when);
-    await Future.delayed(Duration(milliseconds: 100)); // this is a hack to not cancel the first scrolling by the next
+    await Future.delayed(Duration(
+        milliseconds:
+            100)); // this is a hack to not cancel the first scrolling by the next
     _scrollToTime(when);
   }
 
   Future<void> _addModel(TitleAndDescription event) async {
     if (event is TaskEvent) {
-      var newTaskEventCalendarEventData = _mapTaskEventToCalendarEventData(event);
+      var newTaskEventCalendarEventData =
+          _mapTaskEventToCalendarEventData(event);
       _taskEventCalendarEvents.add(newTaskEventCalendarEventData);
       _addToCalendar(newTaskEventCalendarEventData);
-    }
-    else if (event is ScheduledTask) {
+    } else if (event is ScheduledTask) {
       final updatedEvent = await _mapScheduledTaskToCalendarEventData(event);
       _scheduledTaskCalendarEvents.add(updatedEvent);
       _addToCalendar(updatedEvent);
@@ -358,19 +369,18 @@ class _CalendarPageStatus extends State<CalendarPage> {
     _deleteModel(event);
     _addModel(event);
   }
-  
+
   void _deleteModel(TitleAndDescription event) {
     if (event is TaskEvent) {
       _taskEventCalendarEvents.removeWhere((e) => e.event == event);
       calendarController.removeWhere((element) => element.event == event);
-    }
-    else if (event is ScheduledTask) {
+    } else if (event is ScheduledTask) {
       // this also deletes FutureScheduleTasks
       _scheduledTaskCalendarEvents.removeWhere((e) => e.event == event);
       calendarController.removeWhere((element) => element.event == event);
     }
   }
-  
+
   void _refreshModelAndFilterCalendar() {
     calendarController.removeWhere((element) => true);
 
@@ -392,15 +402,17 @@ class _CalendarPageStatus extends State<CalendarPage> {
   }
 
   bool _filterEvent(TitleAndDescription event) {
-    if (event is TaskEvent && (_eventType == EventType.EVENT || _eventType == EventType.BOTH)) {
-      return _filterByTaskOrTemplate(event.taskGroupId!, event.originTemplateId);
+    if (event is TaskEvent &&
+        (_eventType == EventType.EVENT || _eventType == EventType.BOTH)) {
+      return _filterByTaskOrTemplate(
+          event.taskGroupId!, event.originTemplateId);
     }
-    if (event is ScheduledTask && (_eventType == EventType.SCHEDULE || _eventType == EventType.BOTH)) {
+    if (event is ScheduledTask &&
+        (_eventType == EventType.SCHEDULE || _eventType == EventType.BOTH)) {
       return _filterByTaskOrTemplate(event.taskGroupId, event.templateId);
     }
     return false;
   }
-
 
   Widget _createBody(BuildContext context) {
     final now = DateTime.now();
@@ -423,24 +435,26 @@ class _CalendarPageStatus extends State<CalendarPage> {
       child: Column(
         children: [
           SizedBox(
-              height: 64,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    _createTypeButtons(),
-                    Spacer(),
-                    _createModeButtons(),
-                  ],
-                ),
-              ),),
+            height: 64,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  _createTypeButtons(),
+                  Spacer(),
+                  _createModeButtons(),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             flex: 10,
             child: Row(
               children: [
                 Flexible(
                   child: Container(
-                    color: _getCalendarAccentColor(), //Constants.headerBackground
+                    color:
+                        _getCalendarAccentColor(), //Constants.headerBackground
                     width: 16,
                   ),
                 ),
@@ -449,8 +463,8 @@ class _CalendarPageStatus extends State<CalendarPage> {
                   child: _calendarMode == CalendarMode.DAY
                       ? _buildDayView()
                       : _calendarMode == CalendarMode.WEEK
-                        ? _buildWeekView()
-                        : _buildMonthView(now, context),
+                          ? _buildWeekView()
+                          : _buildMonthView(now, context),
                 ),
               ],
             ),
@@ -459,12 +473,13 @@ class _CalendarPageStatus extends State<CalendarPage> {
       ),
     );
   }
-  
+
   NotificationListener<Notification> _buildDayView() {
     return NotificationListener(
       child: DayView<TitleAndDescription>(
         onPageChange: (date, page) {
-          calendarDayKey.currentState?.scrollController.jumpTo(dayAndWeekViewScrollPixels);
+          calendarDayKey.currentState?.scrollController
+              .jumpTo(dayAndWeekViewScrollPixels);
         },
         key: calendarDayKey,
         backgroundColor: _getCalendarBackgroundColor(),
@@ -484,69 +499,9 @@ class _CalendarPageStatus extends State<CalendarPage> {
         final scrollController = calendarDayKey.currentState?.scrollController;
         if (notification is ScrollEndNotification && scrollController != null) {
           if (scrollController.positions.isNotEmpty) {
-            dayAndWeekViewScrollPixels = scrollController.positions.first.pixels;
-            debugPrint(
-                "dayViewScrollPixels=$dayAndWeekViewScrollPixels");
-            return true;
-          }
-        }
-        return false;
-      },
-    );
-  }
-  
-  NotificationListener<Notification> _buildWeekView() {
-    return NotificationListener(
-      child: WeekView(
-          onPageChange: (date, page) {
-            calendarWeekKey.currentState?.scrollController.jumpTo(dayAndWeekViewScrollPixels);
-          },
-          scrollOffset: dayAndWeekViewScrollPixels,
-          key: calendarWeekKey,
-          backgroundColor: _getCalendarBackgroundColor(),
-          eventTileBuilder: _customEventTileBuilder,
-          controller: calendarController,
-          heightPerMinute: _scaleFactor,
-          liveTimeIndicatorSettings: _getTimeIndicatorSettings(),
-          onEventTap: _customTabHandler,
-          headerStringBuilder: _headerWeekBuilder,
-          timeLineStringBuilder: _headerTimeBuilder,
-          timeLineWidth: 47,
-          hourIndicatorSettings: _getHourIndicatorSettings(),
-          weekDayBuilder: (date) {
-            final isToday = date.day == DateTime.now().day;
-            return GestureDetector(
-                onLongPress: () => _onDateLongPress(
-                  DateTime(
-                    date.year,
-                    date.month,
-                    date.day,
-                  ),
-                ),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(date.getWeekdayName().characters.first.toUpperCase(),
-                      style: _getTextStyleForToday(isToday)),
-                    Text(date.day.toString(),
-                        style: _getTextStyleForToday(isToday)),
-                  ],
-                ),
-              ),
-            );
-          },
-          onDateLongPress: _onDateLongPress,
-          headerStyle: _getHeaderStyle(),
-      ),
-      onNotification: (notification) {
-        final scrollController = calendarWeekKey.currentState?.scrollController;
-        if (notification is ScrollEndNotification && scrollController != null) {
-          if (scrollController.positions.isNotEmpty) {
-            dayAndWeekViewScrollPixels = scrollController.positions.first.pixels;
-            debugPrint(
-                "dayViewScrollPixels=$dayAndWeekViewScrollPixels");
+            dayAndWeekViewScrollPixels =
+                scrollController.positions.first.pixels;
+            debugPrint("dayViewScrollPixels=$dayAndWeekViewScrollPixels");
             return true;
           }
         }
@@ -555,7 +510,69 @@ class _CalendarPageStatus extends State<CalendarPage> {
     );
   }
 
-  MonthView<TitleAndDescription> _buildMonthView(DateTime now, BuildContext context) {
+  NotificationListener<Notification> _buildWeekView() {
+    return NotificationListener(
+      child: WeekView(
+        onPageChange: (date, page) {
+          calendarWeekKey.currentState?.scrollController
+              .jumpTo(dayAndWeekViewScrollPixels);
+        },
+        scrollOffset: dayAndWeekViewScrollPixels,
+        key: calendarWeekKey,
+        backgroundColor: _getCalendarBackgroundColor(),
+        eventTileBuilder: _customEventTileBuilder,
+        controller: calendarController,
+        heightPerMinute: _scaleFactor,
+        liveTimeIndicatorSettings: _getTimeIndicatorSettings(),
+        onEventTap: _customTabHandler,
+        headerStringBuilder: _headerWeekBuilder,
+        timeLineStringBuilder: _headerTimeBuilder,
+        timeLineWidth: 47,
+        hourIndicatorSettings: _getHourIndicatorSettings(),
+        weekDayBuilder: (date) {
+          final isToday = date.day == DateTime.now().day;
+          return GestureDetector(
+            onLongPress: () => _onDateLongPress(
+              DateTime(
+                date.year,
+                date.month,
+                date.day,
+              ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(date.getWeekdayName().characters.first.toUpperCase(),
+                      style: _getTextStyleForToday(isToday)),
+                  Text(date.day.toString(),
+                      style: _getTextStyleForToday(isToday)),
+                ],
+              ),
+            ),
+          );
+        },
+        onDateLongPress: _onDateLongPress,
+        headerStyle: _getHeaderStyle(),
+      ),
+      onNotification: (notification) {
+        final scrollController = calendarWeekKey.currentState?.scrollController;
+        if (notification is ScrollEndNotification && scrollController != null) {
+          if (scrollController.positions.isNotEmpty) {
+            dayAndWeekViewScrollPixels =
+                scrollController.positions.first.pixels;
+            debugPrint("dayViewScrollPixels=$dayAndWeekViewScrollPixels");
+            return true;
+          }
+        }
+        return false;
+      },
+    );
+  }
+
+  MonthView<TitleAndDescription> _buildMonthView(
+      DateTime now, BuildContext context) {
     return MonthView(
       onPageChange: (date, page) {
         _scrollToTime(now);
@@ -563,7 +580,7 @@ class _CalendarPageStatus extends State<CalendarPage> {
       key: calendarMonthKey,
       cellBuilder: _customCellBuilder,
       controller: calendarController,
-      cellAspectRatio: 1/(_scaleFactor * 1.8),
+      cellAspectRatio: 1 / (_scaleFactor * 1.8),
       borderColor: _getGridColor(),
       borderSize: 0.75,
       weekDayBuilder: (index) => WeekDayTile(
@@ -573,14 +590,14 @@ class _CalendarPageStatus extends State<CalendarPage> {
           fontSize: 17,
           color: isDarkMode(context) ? Colors.white : Colors.black,
         ),
-        weekDayStringBuilder: (day) => getNarrowWeekdayOf(day, context).toUpperCase(),
+        weekDayStringBuilder: (day) =>
+            getNarrowWeekdayOf(day, context).toUpperCase(),
       ),
       headerStringBuilder: _headerMonthBuilder,
       onDateLongPress: _onDateLongPress,
       headerStyle: _getHeaderStyle(),
     );
   }
-
 
   HourIndicatorSettings _getHourIndicatorSettings() {
     return HourIndicatorSettings(
@@ -590,7 +607,8 @@ class _CalendarPageStatus extends State<CalendarPage> {
     );
   }
 
-  HourIndicatorSettings _getTimeIndicatorSettings() => HourIndicatorSettings(color: _getGridColor());
+  HourIndicatorSettings _getTimeIndicatorSettings() =>
+      HourIndicatorSettings(color: _getGridColor());
 
   Color _getGridColor() => isDarkMode(context) ? Colors.white70 : Colors.grey;
 
@@ -612,14 +630,17 @@ class _CalendarPageStatus extends State<CalendarPage> {
 
   Future<void> _onDateLongPress(DateTime date) async {
     _updateCalendarMode(CalendarMode.DAY);
-    await Future.delayed(Duration(milliseconds: 50)); // this is a hack to not cancel the first scrolling by the next
-    await _jumpToDateTime(date.add(Duration(minutes: TimeOfDay.now().toMinutes())));
+    await Future.delayed(Duration(
+        milliseconds:
+            50)); // this is a hack to not cancel the first scrolling by the next
+    await _jumpToDateTime(
+        date.add(Duration(minutes: TimeOfDay.now().toMinutes())));
   }
-  
+
   TextStyle _getTextStyleForToday(bool isToday) {
     return TextStyle(
       fontSize: isToday ? 18 : null,
-     // color: isToday ? Colors.black : null,
+      // color: isToday ? Colors.black : null,
       fontWeight: isToday ? FontWeight.bold : null,
     );
   }
@@ -630,27 +651,34 @@ class _CalendarPageStatus extends State<CalendarPage> {
     return height;
   }
 
-  Future<List<TitleAndDescription>> _loadFirstTaskEvents(DateTime date, int id) async {
-
+  Future<List<TitleAndDescription>> _loadFirstTaskEvents(
+      DateTime date, int id) async {
     final paging = ChronologicalPaging(date, id, 500);
     return await TaskEventRepository.getAllPaged(paging);
   }
 
   Future<List<TitleAndDescription>> _loadSchedulesTasks() async {
-
-    final paging = ChronologicalPaging(CalendarConstants.maxDate, ChronologicalPaging.maxId, 10000);
+    final paging = ChronologicalPaging(
+        CalendarConstants.maxDate, ChronologicalPaging.maxId, 10000);
     final scheduledTasks = await ScheduledTaskRepository.getAllPaged(paging);
 
-    return scheduledTasks.where((e) => e.active && !e.isOneTimeCompleted).toList();
+    return scheduledTasks
+        .where((e) => e.active && !e.isOneTimeCompleted)
+        .toList();
   }
 
-  Future<CalendarEventData<ScheduledTask>> _mapScheduledTaskToCalendarEventData(ScheduledTask scheduledTask) async {
+  Future<CalendarEventData<ScheduledTask>> _mapScheduledTaskToCalendarEventData(
+      ScheduledTask scheduledTask) async {
     var duration = minCalendarDuration;
-    
+
     if (scheduledTask.templateId != null) {
-      final template = await TemplateRepository.findById(scheduledTask.templateId!);
-      if (template != null && template.when != null && template.when!.durationHours != null) {
-        duration = When.fromDurationHoursToDuration(template.when!.durationHours!, template.when!.durationExactly);
+      final template =
+          await TemplateRepository.findById(scheduledTask.templateId!);
+      if (template != null &&
+          template.when != null &&
+          template.when!.durationHours != null) {
+        duration = When.fromDurationHoursToDuration(
+            template.when!.durationHours!, template.when!.durationExactly);
       }
       duration = duration.min(minCalendarDuration);
     }
@@ -659,8 +687,10 @@ class _CalendarPageStatus extends State<CalendarPage> {
     var nextSchedule = scheduledTask.getNextSchedule()!;
     var startAt = nextSchedule;
     var endAt = nextSchedule.add(duration);
-    if (TimeOfDay.fromDateTime(startAt).toDouble() > TimeOfDay.fromDateTime(endAt).toDouble()) {
-      endAt = startAt.withoutTime.add(Duration(minutes: (60 * 24) - 1)); // cut end to one minute before end of day
+    if (TimeOfDay.fromDateTime(startAt).toDouble() >
+        TimeOfDay.fromDateTime(endAt).toDouble()) {
+      endAt = startAt.withoutTime.add(Duration(
+          minutes: (60 * 24) - 1)); // cut end to one minute before end of day
       //TODO render event part for the next day
       title = "$title >>>";
     }
@@ -670,45 +700,55 @@ class _CalendarPageStatus extends State<CalendarPage> {
       endDate: nextSchedule,
       event: scheduledTask,
       title: title,
-      description: scheduledTask.translatedDescription??"",
+      description: scheduledTask.translatedDescription ?? "",
       startTime: startAt,
       endTime: endAt,
-      color: TaskGroupRepository.findByIdFromCache(scheduledTask.taskGroupId).backgroundColor(context),
+      color: TaskGroupRepository.findByIdFromCache(scheduledTask.taskGroupId)
+          .backgroundColor(context),
       titleStyle: TextStyle(color: Colors.black54),
     );
     return event;
   }
 
-  CalendarEventData<TaskEvent> _mapTaskEventToCalendarEventData(TaskEvent taskEvent) {
-    final duration = taskEvent.startedAt.difference(taskEvent.finishedAt).abs().min(minCalendarDuration);
+  CalendarEventData<TaskEvent> _mapTaskEventToCalendarEventData(
+      TaskEvent taskEvent) {
+    final duration = taskEvent.startedAt
+        .difference(taskEvent.finishedAt)
+        .abs()
+        .min(minCalendarDuration);
     var title = taskEvent.translatedTitle;
     var startAt = taskEvent.startedAt;
     var endAt = taskEvent.startedAt.add(duration);
-    if (TimeOfDay.fromDateTime(startAt).toDouble() > TimeOfDay.fromDateTime(endAt).toDouble()) {
-      endAt = startAt.withoutTime.add(Duration(minutes: (60 * 24) - 1)); // cut end to one minute before end of day
+    if (TimeOfDay.fromDateTime(startAt).toDouble() >
+        TimeOfDay.fromDateTime(endAt).toDouble()) {
+      endAt = startAt.withoutTime.add(Duration(
+          minutes: (60 * 24) - 1)); // cut end to one minute before end of day
       //TODO render event part for the next day
       title = "$title >>>";
     }
-    
+
     return CalendarEventData(
       date: taskEvent.startedAt,
       endDate: taskEvent.startedAt.add(duration),
       event: taskEvent,
       title: title,
-      description: taskEvent.translatedDescription??"",
+      description: taskEvent.translatedDescription ?? "",
       startTime: startAt,
       endTime: endAt,
-      color: TaskGroupRepository.findByIdFromCache(taskEvent.taskGroupId!).backgroundColor(context),
+      color: TaskGroupRepository.findByIdFromCache(taskEvent.taskGroupId!)
+          .backgroundColor(context),
       titleStyle: TextStyle(color: Colors.black54),
     );
   }
 
-  _customTabHandler(List<CalendarEventData<TitleAndDescription>> events, DateTime date) {
+  _customTabHandler(
+      List<CalendarEventData<TitleAndDescription>> events, DateTime date) {
     final event = events[0];
     _handleTapEvent(event);
   }
 
-  _customTileHandler(CalendarEventData<TitleAndDescription> event, DateTime date) {
+  _customTileHandler(
+      CalendarEventData<TitleAndDescription> event, DateTime date) {
     _handleTapEvent(event);
   }
 
@@ -716,28 +756,26 @@ class _CalendarPageStatus extends State<CalendarPage> {
     if (_selectedEvent != event) {
       debugPrint("open $sheetController");
       _updateSelectedEvent(event);
-      sheetController = scaffoldKey.currentState?.showBottomSheet((sheetContext) {
+      sheetController =
+          scaffoldKey.currentState?.showBottomSheet((sheetContext) {
         return _buildEventSheet(sheetContext, context, event.event!);
       });
-      sheetController?.closed
-          .whenComplete(() => _updateSelectedEvent(null));
-    }
-    else {
+      sheetController?.closed.whenComplete(() => _updateSelectedEvent(null));
+    } else {
       _unselectEvent();
     }
   }
 
-  Widget _buildEventSheet(BuildContext sheetContext, BuildContext parentContext, TitleAndDescription event) {
+  Widget _buildEventSheet(BuildContext sheetContext, BuildContext parentContext,
+      TitleAndDescription event) {
     final taskGroup = _getTaskGroupFromEvent(event);
 
     EdgeInsets padding = MediaQuery.paddingOf(parentContext);
 
-    return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildEventSheetContent(event, taskGroup),
-          SizedBox(height: padding.bottom),
-        ]);
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      _buildEventSheetContent(event, taskGroup),
+      SizedBox(height: padding.bottom),
+    ]);
   }
 
   Widget _buildEventSheetContent(event, TaskGroup? taskGroup) {
@@ -747,18 +785,22 @@ class _CalendarPageStatus extends State<CalendarPage> {
           sheetController?.close();
           Navigator.pop(context);
           if (appScaffoldKey.currentState != null) {
-            final taskEventListState = widget.pagesHolder.taskEventList?.getGlobalKey().currentState;
+            final taskEventListState =
+                widget.pagesHolder.taskEventList?.getGlobalKey().currentState;
             if (taskEventListState != null) {
               taskEventListState.clearFilters();
             }
-            appScaffoldKey.currentState!.sendEventFromClicked(TASK_EVENT_LIST_ROUTING_KEY, false, event.id.toString(), null);
+            appScaffoldKey.currentState!.sendEventFromClicked(
+                TASK_EVENT_LIST_ROUTING_KEY, false, event.id.toString(), null);
           }
         },
-        child: TaskEventWidget(event,
+        child: TaskEventWidget(
+          event,
           isInitiallyExpanded: false,
           onTaskEventChanged: (changedTaskEvent) {
             _updateModel(changedTaskEvent);
-            final updatedEvent = _mapTaskEventToCalendarEventData(changedTaskEvent);
+            final updatedEvent =
+                _mapTaskEventToCalendarEventData(changedTaskEvent);
             setState(() => _selectedEvent = updatedEvent);
           },
           onTaskEventDeleted: (deletedTaskEvent) {
@@ -769,8 +811,7 @@ class _CalendarPageStatus extends State<CalendarPage> {
           selectInListWhenChanged: false,
         ),
       );
-    }
-    else if (event is ScheduledTask) {
+    } else if (event is ScheduledTask) {
       final scheduledTask = event;
       var isFutureScheduledTask = scheduledTask is FutureScheduledTask;
       return GestureDetector(
@@ -778,7 +819,11 @@ class _CalendarPageStatus extends State<CalendarPage> {
           sheetController?.close();
           Navigator.pop(context);
           if (appScaffoldKey.currentState != null) {
-            appScaffoldKey.currentState!.sendEventFromClicked(SCHEDULED_TASK_LIST_ROUTING_KEY, false, scheduledTask.id.toString(), null);
+            appScaffoldKey.currentState!.sendEventFromClicked(
+                SCHEDULED_TASK_LIST_ROUTING_KEY,
+                false,
+                scheduledTask.id.toString(),
+                null);
           }
         },
         child: Row(
@@ -794,7 +839,9 @@ class _CalendarPageStatus extends State<CalendarPage> {
                     ),
                     onTapDown: (_) {
                       final origin = _scheduledTaskCalendarEvents
-                          .where((event) => event.event?.id == scheduledTask.id && !(event.event is FutureScheduledTask))
+                          .where((event) =>
+                              event.event?.id == scheduledTask.id &&
+                              !(event.event is FutureScheduledTask))
                           .firstOrNull;
                       if (origin != null) {
                         _handleTapEvent(origin);
@@ -804,13 +851,16 @@ class _CalendarPageStatus extends State<CalendarPage> {
               ),
             Expanded(
               flex: 15,
-              child: ScheduledTaskWidget(scheduledTask,
+              child: ScheduledTaskWidget(
+                scheduledTask,
                 key: scheduledTaskWidgetKey,
                 isInitiallyExpanded: false,
                 isReadOnly: isFutureScheduledTask,
                 onScheduledTaskChanged: (changedScheduledTask) async {
                   _updateModel(changedScheduledTask);
-                  final updatedEvent = await _mapScheduledTaskToCalendarEventData(changedScheduledTask);
+                  final updatedEvent =
+                      await _mapScheduledTaskToCalendarEventData(
+                          changedScheduledTask);
                   setState(() => _selectedEvent = updatedEvent);
                 },
                 onScheduledTaskDeleted: (deletedScheduledTask) {
@@ -831,7 +881,9 @@ class _CalendarPageStatus extends State<CalendarPage> {
                   if (taskEvent != null) {
                     _addModel(taskEvent);
                     _updateModel(scheduledTask);
-                    final updatedEvent = await _mapScheduledTaskToCalendarEventData(scheduledTask);
+                    final updatedEvent =
+                        await _mapScheduledTaskToCalendarEventData(
+                            scheduledTask);
                     setState(() => _selectedEvent = updatedEvent);
                   }
                 },
@@ -848,8 +900,7 @@ class _CalendarPageStatus extends State<CalendarPage> {
   TaskGroup? _getTaskGroupFromEvent(event) {
     if (event is TaskEvent) {
       return _getTaskGroup(event.taskGroupId);
-    }
-    else if (event is ScheduledTask) {
+    } else if (event is ScheduledTask) {
       return _getTaskGroup(event.taskGroupId);
     }
     return null;
@@ -857,7 +908,7 @@ class _CalendarPageStatus extends State<CalendarPage> {
 
   void _unselectEvent() {
     debugPrint("close $sheetController");
-    sheetController?.close(); 
+    sheetController?.close();
     sheetController = null;
     _updateSelectedEvent(null);
   }
@@ -872,9 +923,9 @@ class _CalendarPageStatus extends State<CalendarPage> {
       Rect boundary,
       DateTime startDuration,
       DateTime endDuration) {
-    
     if (events.isNotEmpty) {
-      final event = events[0]; //get first element for the date to be rendered (there should only be one)
+      final event = events[
+          0]; //get first element for the date to be rendered (there should only be one)
       return _buildEventWidget(event, events);
     } else {
       return Container();
@@ -882,48 +933,55 @@ class _CalendarPageStatus extends State<CalendarPage> {
   }
 
   String _headerTimeBuilder(DateTime date, {DateTime? secondaryDate}) =>
-    "${formatToTime(date)}";
+      "${formatToTime(date)}";
 
   String _headerDayBuilder(DateTime date, {DateTime? secondaryDate}) {
     final word = formatToWord(date);
     if (word != null) {
       return "${formatToDate(date, context, showWeekdays: true)} ($word)";
-    }
-    else {
+    } else {
       return "${formatToDate(date, context, showWeekdays: true)}";
     }
   }
 
   String _headerWeekBuilder(DateTime date, {DateTime? secondaryDate}) =>
-    "${formatToDate(date, context, showWeekdays: false)} ${secondaryDate != null ? " - ${formatToDate(secondaryDate, context, showWeekdays: false)}" : ""}";
+      "${formatToDate(date, context, showWeekdays: false)} ${secondaryDate != null ? " - ${formatToDate(secondaryDate, context, showWeekdays: false)}" : ""}";
 
   String _headerMonthBuilder(DateTime date, {DateTime? secondaryDate}) =>
-    "${getMonthOf((date.month - 1) % 12, context)} ${date.year}";
+      "${getMonthOf((date.month - 1) % 12, context)} ${date.year}";
 
-
-  Widget _buildEventWidget(CalendarEventData<TitleAndDescription> event, List<CalendarEventData<TitleAndDescription>> events) {
+  Widget _buildEventWidget(CalendarEventData<TitleAndDescription> event,
+      List<CalendarEventData<TitleAndDescription>> events) {
     final isSelected = event == _selectedEvent;
     final object = event.event;
-    final taskGroupId = object is TaskEvent ? object.taskGroupId : object is ScheduledTask ? object.taskGroupId : null;
+    final taskGroupId = object is TaskEvent
+        ? object.taskGroupId
+        : object is ScheduledTask
+            ? object.taskGroupId
+            : null;
     final taskGroup = _getTaskGroup(taskGroupId);
-    var backgroundColor = isSelected ? taskGroup?.softColor(context) ?? event.color : event.color;
+    var backgroundColor =
+        isSelected ? taskGroup?.softColor(context) ?? event.color : event.color;
     var icon = _getEventIcon(taskGroup);
 
     icon = _addImportantIndicator(icon, object);
 
     if (object is FutureScheduledTask) {
-      backgroundColor = backgroundColor.withOpacity(0.05);
+      backgroundColor = backgroundColor.withValues(alpha: 0.05);
     }
-    
+
     return CustomPaint(
-      painter: object is ScheduledTask ? StripePainter(Colors.transparent, backgroundColor.withOpacity(0.1), _calendarMode == CalendarMode.DAY ? 21 : 7) : null,
-    
+      painter: object is ScheduledTask
+          ? StripePainter(
+              Colors.transparent,
+              backgroundColor.withValues(alpha: 0.1),
+              _calendarMode == CalendarMode.DAY ? 21 : 7)
+          : null,
       child: RoundedEventTile(
         borderRadius: BorderRadius.circular(6.0),
         icon: icon,
         title: event.title,
-        titleStyle:
-            _getEventTextStyle(object),
+        titleStyle: _getEventTextStyle(object),
         descriptionStyle: event.descriptionStyle,
         totalEvents: events.length,
         padding: EdgeInsets.all(3.0),
@@ -935,13 +993,12 @@ class _CalendarPageStatus extends State<CalendarPage> {
 
   Widget? _addImportantIndicator(Widget? icon, TitleAndDescription? object) {
     if (icon != null && object is ScheduledTask && object.important) {
-      icon = Wrap(
-          children: [
-            Icon(Icons.priority_high,
-                color: isDarkMode(context) ? Colors.white60 : Colors.black54,
-                size: (16 * _scaleFactor).max(16)),
-            icon
-          ]);
+      icon = Wrap(children: [
+        Icon(Icons.priority_high,
+            color: isDarkMode(context) ? Colors.white60 : Colors.black54,
+            size: (16 * _scaleFactor).max(16)),
+        icon
+      ]);
     }
     return icon;
   }
@@ -959,42 +1016,44 @@ class _CalendarPageStatus extends State<CalendarPage> {
 
   TextStyle _getEventTextStyle(object) {
     return TextStyle(
-            fontSize: (14 * _scaleFactor).max(14),
-            fontStyle: object is ScheduledTask ? FontStyle.italic : null,
-            fontWeight: object is ScheduledTask && (object.isDue()) ? FontWeight.bold : null,
-            color: object is ScheduledTask
-              ? (object.isDue())
-                ? Colors.red
-                : object.getDueColor(context, lighter: true)
-              : (isDarkMode(context) ? Colors.white70 : Colors.black54), // event.color.accent,
-          );
+      fontSize: (14 * _scaleFactor).max(14),
+      fontStyle: object is ScheduledTask ? FontStyle.italic : null,
+      fontWeight:
+          object is ScheduledTask && (object.isDue()) ? FontWeight.bold : null,
+      color: object is ScheduledTask
+          ? (object.isDue())
+              ? Colors.red
+              : object.getDueColor(context, lighter: true)
+          : (isDarkMode(context)
+              ? Colors.white70
+              : Colors.black54), // event.color.accent,
+    );
   }
 
   Border? _getEventBorder(bool isSelected, object, Color backgroundColor) {
     final selectedColor = isDarkMode(context) ? Colors.white38 : Colors.black54;
     if (object is TaskEvent) {
-      return isSelected
-          ? Border.all(color: selectedColor, width: 1.2)
-          : null;
-    }
-    else if (object is ScheduledTask) {
+      return isSelected ? Border.all(color: selectedColor, width: 1.2) : null;
+    } else if (object is ScheduledTask) {
       bool isDue = object.isDue();
-      Color color = isDue
-          ? Colors.red
-          : backgroundColor;
-      return Border.all(color: isSelected ? selectedColor : color, width: isSelected ? 1.2 : 0.5);
+      Color color = isDue ? Colors.red : backgroundColor;
+      return Border.all(
+          color: isSelected ? selectedColor : color,
+          width: isSelected ? 1.2 : 0.5);
     }
     return null;
   }
 
   Widget _customCellBuilder(
-      date, List<CalendarEventData<TitleAndDescription>> events, bool isToday, bool isInMonth) {
-
+      date,
+      List<CalendarEventData<TitleAndDescription>> events,
+      bool isToday,
+      bool isInMonth) {
     return FilledCell<TitleAndDescription>(
       date: date,
       shouldHighlight: isToday,
       backgroundColor: isInMonth
-          ? (isDarkMode(context) ? Colors.black12: Color(0xffffffff))
+          ? (isDarkMode(context) ? Colors.black12 : Color(0xffffffff))
           : (isDarkMode(context) ? Colors.black : Color(0xfff0f0f0)),
       events: events,
       titleColor: isDarkMode(context) ? Colors.white : Colors.black,
@@ -1002,9 +1061,15 @@ class _CalendarPageStatus extends State<CalendarPage> {
         final event = events[index];
         final isSelected = event == _selectedEvent;
         final object = event.event;
-        final taskGroupId = object is TaskEvent ? object.taskGroupId : object is ScheduledTask ? object.taskGroupId : null;
+        final taskGroupId = object is TaskEvent
+            ? object.taskGroupId
+            : object is ScheduledTask
+                ? object.taskGroupId
+                : null;
         final taskGroup = _getTaskGroup(taskGroupId);
-        var backgroundColor = isSelected ? taskGroup?.softColor(context) ?? event.color : event.color;
+        var backgroundColor = isSelected
+            ? taskGroup?.softColor(context) ?? event.color
+            : event.color;
         var icon = _getEventIcon(taskGroup);
         icon = _addImportantIndicator(icon, object);
 
@@ -1018,18 +1083,18 @@ class _CalendarPageStatus extends State<CalendarPage> {
             borderRadius: BorderRadius.circular(4.0),
             border: _getEventBorder(isSelected, object, backgroundColor),
           ),
-          margin: EdgeInsets.symmetric(
-              vertical: 2.0, horizontal: 3.0),
+          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 3.0),
           padding: const EdgeInsets.all(2.0),
           alignment: Alignment.center,
           child: CustomPaint(
-            painter: object is ScheduledTask ? StripePainter(Colors.transparent, backgroundColor.withOpacity(0.1), 7) : null,
+            painter: object is ScheduledTask
+                ? StripePainter(
+                    Colors.transparent, backgroundColor.withOpacity(0.1), 7)
+                : null,
             child: Row(
               children: [
-                if (icon != null)
-                  icon,
-                if (icon != null)
-                  Text(" "),
+                if (icon != null) icon,
+                if (icon != null) Text(" "),
                 Expanded(
                   child: Text(
                     event.title,
@@ -1043,17 +1108,21 @@ class _CalendarPageStatus extends State<CalendarPage> {
           ),
         );
       },
-      onTileTap: _customTileHandler,//widget.onEventTap,
+      onTileTap: _customTileHandler, //widget.onEventTap,
       //dateStringBuilder: widget.dateStringBuilder,
     );
   }
 
-  Color _getCalendarBackgroundColor() => isDarkMode(context) ? Colors.black12 : Colors.white;
+  Color _getCalendarBackgroundColor() =>
+      isDarkMode(context) ? Colors.black12 : Colors.white;
 
-  Color _getCalendarAccentColor() => isDarkMode(context) ? Colors.blueGrey : Color(0xFFDCF0FF);
+  Color _getCalendarAccentColor() =>
+      isDarkMode(context) ? Colors.blueGrey : Color(0xFFDCF0FF);
 
   TaskGroup? _getTaskGroup(int? taskGroupId) {
-    final taskGroup = taskGroupId != null ? TaskGroupRepository.findByIdFromCache(taskGroupId) : null;
+    final taskGroup = taskGroupId != null
+        ? TaskGroupRepository.findByIdFromCache(taskGroupId)
+        : null;
     return taskGroup;
   }
 
@@ -1071,39 +1140,49 @@ class _CalendarPageStatus extends State<CalendarPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.event_available_rounded, color: isDarkMode(context) ? (_eventType == EventType.EVENT || _eventType == EventType.BOTH  ? PRIMARY_COLOR : null) : null),
+                Icon(Icons.event_available_rounded,
+                    color: isDarkMode(context)
+                        ? (_eventType == EventType.EVENT ||
+                                _eventType == EventType.BOTH
+                            ? PRIMARY_COLOR
+                            : null)
+                        : null),
               ],
-            )
-        ),
+            )),
         SizedBox(
             width: 75,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.next_plan_outlined, color: isDarkMode(context) ? (_eventType == EventType.SCHEDULE || _eventType == EventType.BOTH ? PRIMARY_COLOR : null) : null),
+                Icon(Icons.next_plan_outlined,
+                    color: isDarkMode(context)
+                        ? (_eventType == EventType.SCHEDULE ||
+                                _eventType == EventType.BOTH
+                            ? PRIMARY_COLOR
+                            : null)
+                        : null),
               ],
-            )
-        ),
+            )),
       ],
       isSelected: _eventTypeSelection,
       onPressed: (int index) {
         setState(() {
           _eventTypeSelection[index] = !_eventTypeSelection[index];
-          if (_eventTypeSelection[EventType.EVENT.index] && _eventTypeSelection[EventType.SCHEDULE.index]) {
+          if (_eventTypeSelection[EventType.EVENT.index] &&
+              _eventTypeSelection[EventType.SCHEDULE.index]) {
             _eventType = EventType.BOTH;
-          }
-          else if (_eventTypeSelection[EventType.EVENT.index]) {
+          } else if (_eventTypeSelection[EventType.EVENT.index]) {
             _eventType = EventType.EVENT;
-          }
-          else if (_eventTypeSelection[EventType.SCHEDULE.index]) {
+          } else if (_eventTypeSelection[EventType.SCHEDULE.index]) {
             _eventType = EventType.SCHEDULE;
-          }
-          else {
+          } else {
             _eventType = EventType.NONE;
           }
         });
-        final storeEventType = _eventType == EventType.NONE ? EventType.BOTH : _eventType;
-        PreferenceService().setInt(PreferenceService.DATA_CURRENT_EVENT_TYPE, storeEventType.index);
+        final storeEventType =
+            _eventType == EventType.NONE ? EventType.BOTH : _eventType;
+        PreferenceService().setInt(
+            PreferenceService.DATA_CURRENT_EVENT_TYPE, storeEventType.index);
         _refreshModelAndFilterCalendar();
         _unselectEvent();
       },
@@ -1111,18 +1190,20 @@ class _CalendarPageStatus extends State<CalendarPage> {
   }
 
   void _updateCalendarMode(CalendarMode mode) {
-    final jumpToToday = mode != CalendarMode.MONTH && _calendarMode == CalendarMode.MONTH && dayAndWeekViewScrollPixels == 0;
+    final jumpToToday = mode != CalendarMode.MONTH &&
+        _calendarMode == CalendarMode.MONTH &&
+        dayAndWeekViewScrollPixels == 0;
     setState(() {
       _calendarModeSelection[_calendarMode.index] = false;
       _calendarModeSelection[mode.index] = true;
       _calendarMode = mode;
     });
-    PreferenceService().setInt(PreferenceService.DATA_CURRENT_CALENDAR_MODE, mode.index);
+    PreferenceService()
+        .setInt(PreferenceService.DATA_CURRENT_CALENDAR_MODE, mode.index);
     if (jumpToToday) {
       _jumpToSelectionOrToday();
     }
   }
-
 
   Widget _createModeButtons() {
     return ToggleButtons(
@@ -1138,28 +1219,44 @@ class _CalendarPageStatus extends State<CalendarPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_view_day, color: isDarkMode(context) ? (_calendarMode == CalendarMode.DAY ? PRIMARY_COLOR : null) : null,),
+                Icon(
+                  Icons.calendar_view_day,
+                  color: isDarkMode(context)
+                      ? (_calendarMode == CalendarMode.DAY
+                          ? PRIMARY_COLOR
+                          : null)
+                      : null,
+                ),
               ],
-            )
-        ),
+            )),
         SizedBox(
             width: 50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_view_week, color: isDarkMode(context) ? (_calendarMode == CalendarMode.WEEK ? PRIMARY_COLOR : null) : null,),
+                Icon(
+                  Icons.calendar_view_week,
+                  color: isDarkMode(context)
+                      ? (_calendarMode == CalendarMode.WEEK
+                          ? PRIMARY_COLOR
+                          : null)
+                      : null,
+                ),
               ],
-            )
-        ),
+            )),
         SizedBox(
             width: 50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_view_month, color: isDarkMode(context) ? (_calendarMode == CalendarMode.MONTH ? PRIMARY_COLOR : null) : null),
+                Icon(Icons.calendar_view_month,
+                    color: isDarkMode(context)
+                        ? (_calendarMode == CalendarMode.MONTH
+                            ? PRIMARY_COLOR
+                            : null)
+                        : null),
               ],
-            )
-        ),
+            )),
       ],
       isSelected: _calendarModeSelection,
       onPressed: (int index) {
@@ -1167,9 +1264,7 @@ class _CalendarPageStatus extends State<CalendarPage> {
       },
     );
   }
-
 }
-
 
 class StripePainter extends CustomPainter {
   final Color color1;
@@ -1180,11 +1275,11 @@ class StripePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    DiagonalStripesThick(bgColor: color1, fgColor: color2, featuresCount: stripeCount).paintOnWidget(canvas, size);
+    DiagonalStripesThick(
+            bgColor: color1, fgColor: color2, featuresCount: stripeCount)
+        .paintOnWidget(canvas, size);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
-
-

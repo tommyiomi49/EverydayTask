@@ -1,5 +1,5 @@
 name: personaltasklogger
-description: A task tracker, logger and scheduler
+description: TaskTracker - A School Works Reminder and Academic Management Mobile Application
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -20,7 +20,6 @@ version: 1.8.1+10801
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=3.32.0 <3.38.0" # ensure only Flutter versions are used that have been tested and work with AlarmManagerPlus
-
 dependencies:
   flutter:
     sdk: flutter
@@ -53,10 +52,14 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   flutter_iconpicker: ^4.0.3
   win32: ^5.5.1
-  calendar_view:
-    path: ./flutter_calendar_view
-  flutter_treeview:
-    path: ./flutter_treeview
+  calendar_view: ^1.0.4
+  flutter_treeview: any
+  sqflite_common_ffi: ^2.3.3
+  sqflite_common_ffi_web: ^0.4.5
+  google_fonts: ^6.2.1
+  firebase_core: ^5.2.0
+  cloud_firestore: ^7.2.0
+  firebase_auth: ^7.1.0
 
 
 

@@ -1,65 +1,182 @@
-![Static Badge](https://img.shields.io/badge/made_by-a_human_(not_AI)-green)
+# TaskTracker: A School Works Reminder and Academic Management Mobile Application
 
+TaskTracker is a Flutter mobile application built for students to track, organize, and manage academic subjects, coursework, deadlines, and schoolwork reminders.
 
-[![Downloads last month](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Fmonthly%2Fde.jepfa.personaltasklogger.json&query=%24.total_downloads&logo=fdroid&label=Downloads%20last%20month)](https://f-droid.org/en/packages/de.jepfa.personaltasklogger/)
+---
 
+## 📊 Database Architecture (School Works ERD)
 
-[![Downloads (all time)](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fde.jepfa.personaltasklogger.json&query=%24.total_downloads&logo=fdroid&label=Downloads%20(all%20time))](https://f-droid.org/en/packages/de.jepfa.personaltasklogger/)
+The application architecture directly implements the School Works ERD:
 
-# Everyday Tasks
+```
++------------------------------------+
+|               Users                |
++------------------------------------+
+| PK | user_id                       |
++----+-------------------------------+
+|    | fName                         |
+|    | lName                         |
+|    | gmail                         |
+|    | password                      |
++----+-------------------------------+
+                   |
+                   | 1-to-Many
+                   v
++------------------------------------+
+|              Subject               |
++------------------------------------+
+| PK | subject_id                    |
++----+-------------------------------+
+| FK | user_id                       |
+|    | subject_code                  |
+|    | subject_name                  |
+|    | instructor_name               |
++----+-------------------------------+
+                   |
+                   | 1-to-Many
+                   v
++------------------------------------+
+|             Schoolwork             |
++------------------------------------+
+| PK | work_id                       |
++----+-------------------------------+
+| FK | subject_id                    |
+|    | title                         |
+|    | description                   |
+|    | due_date                      |
+|    | due_time                      |
+|    | priority                      |
+|    | status                        |
++----+-------------------------------+
+```
 
-Track and log your tasks with EverydayTasks and create schedules for repetitive tasks. See how much time you have spent for certain tasks, and get notified if a scheduled task is due.
+### Table Definitions
 
-## Core features of the app
+1. **`users` Table**
+   - `user_id` (INTEGER, Primary Key, Autoincrement)
+   - `fName` (TEXT, Student's First Name)
+   - `lName` (TEXT, Student's Last Name)
+   - `gmail` (TEXT, Unique Gmail address)
+   - `password` (TEXT, Account password)
 
-- log tasks you did fast and quickly
-- track your tasks to the minute
-- see statistics of your done tasks, e.g. how much time you spent on what
-- create schedules for repetitive tasks with a custom interval and get notified when they are due 
-- use dozens of predefined tasks and variants or create your own tasks 
+2. **`subject` Table**
+   - `subject_id` (INTEGER, Primary Key, Autoincrement)
+   - `user_id` (INTEGER, Foreign Key referencing `users(user_id)` ON DELETE CASCADE)
+   - `subject_code` (TEXT, Course/Subject code, e.g., CS301, MATH202)
+   - `subject_name` (TEXT, Course title, e.g., Data Structures and Algorithms)
+   - `instructor_name` (TEXT, Name of professor/instructor)
 
+3. **`schoolwork` Table**
+   - `work_id` (INTEGER, Primary Key, Autoincrement)
+   - `subject_id` (INTEGER, Foreign Key referencing `subject(subject_id)` ON DELETE CASCADE)
+   - `title` (TEXT, Schoolwork/task title)
+   - `description` (TEXT, Task description, guidelines, and reference notes)
+   - `due_date` (TEXT, Due date formatted as `YYYY-MM-DD`)
+   - `due_time` (TEXT, Due time formatted as `HH:mm`)
+   - `priority` (TEXT, `High`, `Medium`, or `Low`)
+   - `status` (TEXT, `Pending`, `In Progress`, or `Completed`)
 
-For more information see [https://everydaytasks.jepfa.de](https://everydaytasks.jepfa.de)
+---
 
-## Screenshots
-<details>
-<summary>Show screenshots</summary>
+## 🚀 Key Features
 
-![](metadata/en-US/images/phoneScreenshots/1.png)
-![](metadata/en-US/images/phoneScreenshots/3.png)
-![](metadata/en-US/images/phoneScreenshots/4.png)
-![](metadata/en-US/images/phoneScreenshots/5.png)
+### 1. Student Authentication & Profile Management
+- Student registration with full name, Gmail, and password.
+- Secure login and persistent session state.
+- Quick **One-Tap Demo Student Login** for instant evaluation and testing.
+- Student profile editing with student ID badge display.
 
-Dark theme:
-![](metadata/en-US/images/phoneScreenshots/a.png)
-![](metadata/en-US/images/phoneScreenshots/b.png)
-![](metadata/en-US/images/phoneScreenshots/c.png)
-![](metadata/en-US/images/phoneScreenshots/d.png)
+### 2. Academic Management (Subjects)
+- Complete CRUD operations for enrolled subjects.
+- Subject cards displaying course code, course name, and instructor name.
+- Real-time progress bar tracking the completion rate of tasks under each subject.
+- Dedicated **Subject Details** page listing all schoolworks assigned to that subject.
 
-</details>
+### 3. School Works & Task Tracker
+- Comprehensive list of schoolwork items with:
+  - Subject code badge
+  - Interactive completion checkbox
+  - Real-time countdown & overdue notifications (e.g., "Due today at 11:59 PM", "Overdue by 1 day")
+  - Priority badge (`High`, `Medium`, `Low`)
+  - Status badge (`Pending`, `In Progress`, `Completed`, `Overdue`)
+- Filters:
+  - Tabbed status filtering: **All**, **Pending**, **In Progress**, **Completed**, and **Overdue**
+  - Subject dropdown filter
+  - Priority filter
+  - Live search by task title, description, or subject
+  - Sort by Due Date, Priority, or Alphabetical title
 
-## Download
+### 4. School Works Reminder & Notifications
+- Integrated local notification alerts using `flutter_local_notifications`.
+- Prominent Urgent / Overdue alert banner on the Academic Dashboard.
+- Scheduled reminders for upcoming deadlines.
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/de.jepfa.personaltasklogger/)
+### 5. Academic Dashboard
+- Personalized student greeting with date.
+- Overall semester academic completion progress meter.
+- Overview metrics cards: Total Subjects, Total Tasks, Pending Tasks, Completed Tasks.
+- "Urgent & Due Soon" quick-action carousel.
+- "Your Subjects" horizontal preview.
 
+---
 
-[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-alt="Get it on Google Play"
-height="80">](https://play.google.com/store/apps/details?id=de.jepfa.personaltasklogger)
+## 🛠️ Project Structure
 
-Otherwise, you can download the latest release version [here](https://everydaytasks.jepfa.de/download/).
+```
+lib/
+├── main.dart                          # App Entrypoint
+└── task_tracker/
+    ├── database/
+    │   └── task_tracker_db.dart       # SQLite Database Helper & Schema (Users, Subject, Schoolwork)
+    ├── models/
+    │   ├── user_model.dart            # Users Entity Model
+    │   ├── subject_model.dart         # Subject Entity Model
+    │   ├── schoolwork_model.dart      # Schoolwork Entity Model
+    │   └── schoolwork_with_subject.dart # Joined Schoolwork & Subject Presentation Model
+    ├── services/
+    │   ├── auth_service.dart          # Authentication & User Session Service
+    │   ├── subject_service.dart       # Subject CRUD & Analytics Service
+    │   ├── schoolwork_service.dart    # Schoolwork CRUD, Filters & Dashboard Stats Service
+    │   └── notification_service.dart  # Reminder & Alert Notification Service
+    ├── screens/
+    │   ├── auth/
+    │   │   ├── login_screen.dart      # Student Login & Demo Login
+    │   │   └── register_screen.dart   # Student Registration
+    │   ├── home/
+    │   │   └── main_navigation_screen.dart # Bottom Navigation Shell (4 Tabs)
+    │   ├── dashboard/
+    │   │   └── dashboard_tab.dart     # Academic Overview & Reminders Dashboard
+    │   ├── schoolworks/
+    │   │   ├── schoolworks_tab.dart   # All Schoolworks List, Search & Filters
+    │   │   ├── add_edit_schoolwork_screen.dart # Add/Edit Schoolwork Form
+    │   │   └── schoolwork_detail_screen.dart   # Schoolwork Detail View & Actions
+    │   ├── subjects/
+    │   │   ├── subjects_tab.dart      # Subjects List & Enrollment Cards
+    │   │   ├── add_edit_subject_screen.dart    # Add/Edit Subject Form
+    │   │   └── subject_detail_screen.dart      # Subject Detail & Course Tasks
+    │   └── profile/
+    │       └── profile_tab.dart       # Profile, Theme, ERD Info & Logout
+    ├── widgets/
+    │   ├── schoolwork_card.dart       # Interactive Schoolwork Task Card
+    │   ├── subject_card.dart          # Subject Summary Card with Progress Bar
+    │   ├── stats_card.dart            # Quick Metrics Card
+    │   ├── priority_badge.dart        # High / Medium / Low Badge
+    │   └── status_badge.dart          # Pending / In Progress / Completed Badge
+    ├── theme/
+    │   └── app_theme.dart             # Academic Indigo & Teal Design System
+    └── task_tracker_app.dart          # Root Application Widget
+```
 
-## Development details
+---
 
-To re-generate floor files execute:
+## 🏃 Running the Application
 
-	flutter packages pub run build_runner build
-
-To build the release with custom icon data:
-
-    flutter build apk --release --no-tree-shake-icons
-
-## Contribute
-You are welcome to translate the app. See [TRANSLATE.md](TRANSLATE.md).
+1. Ensure Flutter is installed and in your environment PATH.
+2. In the project directory, run:
+   ```bash
+   flutter pub get
+   flutter run
+   ```
+3. On the login screen:
+   - Click **One-Tap Demo Student Login** to immediately explore the app with preloaded subjects and schoolworks.
+   - Or click **Create Account** to register a new student with your own name and Gmail.

@@ -4,15 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:personaltasklogger/db/repository/ChronologicalPaging.dart';
-import 'package:personaltasklogger/db/repository/ScheduledTaskEventRepository.dart';
-import 'package:personaltasklogger/db/repository/ScheduledTaskRepository.dart';
 import 'package:personaltasklogger/db/repository/TaskEventRepository.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../db/database.dart';
-import '../db/repository/TemplateRepository.dart';
 
 class BackupRestoreService {
   static final BackupRestoreService _service = BackupRestoreService._internal();
@@ -23,7 +19,8 @@ class BackupRestoreService {
 
   BackupRestoreService._internal();
 
-  Future<void> backup(Function(bool, String?) successHandler, Function(String) errorHandler) async {
+  Future<void> backup(Function(bool, String?) successHandler,
+      Function(String) errorHandler) async {
     try {
       final dbFolder = await getDatabasesPath();
       final srcFile = File("$dbFolder/app_database.db");
@@ -32,9 +29,9 @@ class BackupRestoreService {
       final fileName = "EverydayTasks_$today.db";
 
       final savedPath = await FilePicker.saveFile(
-          fileName: fileName,
-          allowedExtensions: ["db"],
-          bytes: srcFile.readAsBytesSync(),
+        fileName: fileName,
+        allowedExtensions: ["db"],
+        bytes: srcFile.readAsBytesSync(),
       );
       if (savedPath != null) {
         successHandler(true, fileName);
@@ -48,11 +45,10 @@ class BackupRestoreService {
       errorHandler("Cannot export database!");
       print(e);
     }
-
   }
 
-  Future<void> restore(Function(bool) successHandler, Function(String) errorHandler) async {
-
+  Future<void> restore(
+      Function(bool) successHandler, Function(String) errorHandler) async {
     try {
       final dbFolder = await getDatabasesPath();
       final dbPath = join(dbFolder, 'app_database.db');
@@ -77,7 +73,8 @@ class BackupRestoreService {
           final dbToRestoreName = dbToRestore.path;
 
           // do a test if it is a app db
-          await TaskEventRepository.getAllPaged(ChronologicalPaging.start(10), dbToRestoreName);
+          await TaskEventRepository.getAllPaged(
+              ChronologicalPaging.start(10), dbToRestoreName);
           await dbToRestore.close();
 
           // delete journal file
@@ -92,18 +89,15 @@ class BackupRestoreService {
           //reopening
           (await getDb()).close();
           await getDb();
-
-
         } catch (e, trace) {
           print(e);
           debugPrintStack(stackTrace: trace);
           debugPrint("corrupt file detected, ignore it!");
-          if (restoreDbFile?.existsSync()??false) restoreDbFile?.delete();
+          if (restoreDbFile?.existsSync() ?? false) restoreDbFile?.delete();
 
           errorHandler("This is not an EverydayTasks backup file!");
           return;
-        }
-        finally {
+        } finally {
           await dbToRestore?.close();
         }
 
@@ -116,7 +110,6 @@ class BackupRestoreService {
       print(e);
     }
   }
-
 
   String _getFullPath(String basePath, int? version) =>
       version != null ? "$basePath ($version).db" : "$basePath.db";

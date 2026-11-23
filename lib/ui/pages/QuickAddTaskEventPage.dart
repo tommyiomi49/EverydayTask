@@ -16,7 +16,6 @@ import 'package:personaltasklogger/ui/pages/ScheduledTaskList.dart';
 import '../../db/repository/TaskGroupRepository.dart';
 import '../components/ToggleActionIcon.dart';
 import '../utils.dart';
-import 'PageScaffoldState.dart';
 import 'TaskEventList.dart';
 
 final String PREF_SORT_BY = "quickAdd/sortedBy";
@@ -54,20 +53,22 @@ class QuickAddTaskEventPage extends PageScaffold<QuickAddTaskEventPageState> {
   String getRoutingKey() {
     return "QuickAdd";
   }
-
 }
 
-enum SortBy {GROUP, TITLE,}
+enum SortBy {
+  GROUP,
+  TITLE,
+}
 
-class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage> with AutomaticKeepAliveClientMixin<QuickAddTaskEventPage> {
-
+class QuickAddTaskEventPageState
+    extends PageScaffoldState<QuickAddTaskEventPage>
+    with AutomaticKeepAliveClientMixin<QuickAddTaskEventPage> {
   List<Template> _templates = [];
 
   SortBy _sortBy = SortBy.GROUP;
   bool _pinQuickAddPage = false;
   bool _groupByCategory = false;
   TaskGroup? _groupedByTaskGroup;
-
 
   final _preferenceService = PreferenceService();
 
@@ -92,8 +93,7 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
   }
 
   @override
-  void searchQueryUpdated(String? searchQuery) {
-  }
+  void searchQueryUpdated(String? searchQuery) {}
 
   @override
   Widget build(BuildContext context) {
@@ -108,23 +108,21 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
           borderRadius: BorderRadius.circular(18.0),
         ),
         side: BorderSide.none,
-        minimumSize: Size(double.infinity, 30), // double.infinity is the width and 30 is the height
+        minimumSize: Size(double.infinity,
+            30), // double.infinity is the width and 30 is the height
       ),
       onPressed: () {
         _groupedByTaskGroup = null;
         _loadQuickAdds();
       },
     );
-    var tiles = OrientationBuilder(
-              builder: (context, orientation) {
-                if (_groupByCategory && _groupedByTaskGroup == null) {
-                  return _buildTaskGroupTiles(orientation);
-                }
-                else {
-                  return _buildTemplateTiles(orientation);
-                }
-              }
-            );
+    var tiles = OrientationBuilder(builder: (context, orientation) {
+      if (_groupByCategory && _groupedByTaskGroup == null) {
+        return _buildTaskGroupTiles(orientation);
+      } else {
+        return _buildTemplateTiles(orientation);
+      }
+    });
     if (_groupedByTaskGroup != null) {
       return Padding(
         padding: EdgeInsets.all(16.0),
@@ -137,8 +135,7 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
           ],
         ),
       );
-    }
-    else {
+    } else {
       return Padding(
         padding: EdgeInsets.all(16.0),
         child: tiles,
@@ -148,22 +145,22 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
 
   @override
   List<Widget>? getActions(BuildContext context) {
-    final pinQuickAddPage = ToggleActionIcon(Icons.push_pin, Icons.push_pin_outlined, _pinQuickAddPage, pinQuickAddPageIconKey);
+    final pinQuickAddPage = ToggleActionIcon(Icons.push_pin,
+        Icons.push_pin_outlined, _pinQuickAddPage, pinQuickAddPageIconKey);
     _preferenceService.getBool(PREF_PIN_QUICK_ADD).then((value) {
       if (value != null) {
         _updatePinQuickAddPage(value, withSnackMsg: false);
-      }
-      else {
+      } else {
         pinQuickAddPageIconKey.currentState?.refresh(_pinQuickAddPage);
       }
     });
 
-    final groupByCategoryIcon = ToggleActionIcon(Icons.category, Icons.category_outlined, _groupByCategory, groupByCategoryIconKey);
+    final groupByCategoryIcon = ToggleActionIcon(Icons.category,
+        Icons.category_outlined, _groupByCategory, groupByCategoryIconKey);
     _preferenceService.getBool(PREF_GROUP_BY_CATEGORY).then((value) {
       if (value != null) {
         _updateGroupByCategory(value, withSnackMsg: false);
-      }
-      else {
+      } else {
         groupByCategoryIconKey.currentState?.refresh(_groupByCategory);
       }
     });
@@ -182,41 +179,33 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
             _updateGroupByCategory(_groupByCategory, withSnackMsg: true);
           }),
       GestureDetector(
-        child: Padding(padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Icon(Icons.sort_outlined)),
         onTapDown: (details) {
-          showPopUpMenuAtTapDown(
-              context,
-              details,
-              [
-                PopupMenuItem<String>(
-                    child: Row(
-                        children: [
-                          createCheckIcon(_sortBy == SortBy.GROUP),
-                          const Spacer(),
-                          Text(translate('pages.quick_add.menu.sorting.by_category')),
-                        ]
-                    ),
-                    value: '1'),
-                PopupMenuItem<String>(
-                    child: Row(
-                        children: [
-                          createCheckIcon(_sortBy == SortBy.TITLE),
-                          const Spacer(),
-                          Text(translate('pages.quick_add.menu.sorting.by_title')),
-                        ]
-                    ),
-                    value: '2'),
-
-              ]
-          ).then((selected) {
+          showPopUpMenuAtTapDown(context, details, [
+            PopupMenuItem<String>(
+                child: Row(children: [
+                  createCheckIcon(_sortBy == SortBy.GROUP),
+                  const Spacer(),
+                  Text(translate('pages.quick_add.menu.sorting.by_category')),
+                ]),
+                value: '1'),
+            PopupMenuItem<String>(
+                child: Row(children: [
+                  createCheckIcon(_sortBy == SortBy.TITLE),
+                  const Spacer(),
+                  Text(translate('pages.quick_add.menu.sorting.by_title')),
+                ]),
+                value: '2'),
+          ]).then((selected) {
             switch (selected) {
-              case '1' :
+              case '1':
                 {
                   _updateSortBy(SortBy.GROUP);
                   break;
                 }
-              case '2' :
+              case '2':
                 {
                   _updateSortBy(SortBy.TITLE);
                   break;
@@ -243,18 +232,21 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.all(16),
-                      child: Text(translate('pages.quick_add.action.description')),
+                      child:
+                          Text(translate('pages.quick_add.action.description')),
                     ),
                     OutlinedButton(
-                      child: Text(translate('pages.quick_add.action.new_quick_add.title')),
+                      child: Text(translate(
+                          'pages.quick_add.action.new_quick_add.title')),
                       onPressed: () {
                         Navigator.pop(super.context);
-            
+
                         _onCreateQuickAddPressed();
                       },
                     ),
                     ElevatedButton(
-                      child: Text(translate('pages.quick_add.action.new_journal_entry.title')),
+                      child: Text(translate(
+                          'pages.quick_add.action.new_journal_entry.title')),
                       onPressed: () {
                         Navigator.pop(context);
                         _onCreateTaskEventPressed(context);
@@ -270,111 +262,123 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
 
   void _onCreateTaskEventPressed(BuildContext context) async {
     Object? _selectedTemplateItem;
-    showTemplateDialog(context,
+    showTemplateDialog(
+        context,
         translate('pages.quick_add.action.new_journal_entry.title'),
         translate('pages.quick_add.action.new_journal_entry.description'),
         selectedItem: (selectedItem) {
-          setState(() {
-            _selectedTemplateItem = selectedItem;
-          });
-        },
-        okPressed: () async {
-          Navigator.pop(super.context);
-          TaskEvent? newTaskEvent = await Navigator.push(super.context, MaterialPageRoute(builder: (context) {
-            if (_selectedTemplateItem is TaskGroup) {
-              return TaskEventForm(
-                formTitle: translate('forms.task_event.create.title'),
-                taskGroup: _selectedTemplateItem as TaskGroup,);
-            }
-            else if (_selectedTemplateItem is Template) {
-              return TaskEventForm(
-                formTitle: translate('forms.task_event.create.title'),
-                template: _selectedTemplateItem as Template,);
-            }
-            else {
-              return TaskEventForm(formTitle: translate('forms.task_event.create.title'));
-            }
-          }));
-    
-          if (newTaskEvent != null) {
-            TaskEventRepository.insert(newTaskEvent).then((newTaskEvent) {
-              _handleNewTaskEvent(newTaskEvent);
-            });
-          }
-        },
-        cancelPressed: () {
-          Navigator.pop(super.context);
+      setState(() {
+        _selectedTemplateItem = selectedItem;
+      });
+    }, okPressed: () async {
+      Navigator.pop(super.context);
+      TaskEvent? newTaskEvent = await Navigator.push(super.context,
+          MaterialPageRoute(builder: (context) {
+        if (_selectedTemplateItem is TaskGroup) {
+          return TaskEventForm(
+            formTitle: translate('forms.task_event.create.title'),
+            taskGroup: _selectedTemplateItem as TaskGroup,
+          );
+        } else if (_selectedTemplateItem is Template) {
+          return TaskEventForm(
+            formTitle: translate('forms.task_event.create.title'),
+            template: _selectedTemplateItem as Template,
+          );
+        } else {
+          return TaskEventForm(
+              formTitle: translate('forms.task_event.create.title'));
+        }
+      }));
+
+      if (newTaskEvent != null) {
+        TaskEventRepository.insert(newTaskEvent).then((newTaskEvent) {
+          _handleNewTaskEvent(newTaskEvent);
         });
+      }
+    }, cancelPressed: () {
+      Navigator.pop(super.context);
+    });
   }
 
   void _handleNewTaskEvent(TaskEvent newTaskEvent) {
-    toastInfo(context,
-        translate('forms.task_event.create.success', args: {"title" : newTaskEvent.translatedTitle}),
+    toastInfo(
+        context,
+        translate('forms.task_event.create.success',
+            args: {"title": newTaskEvent.translatedTitle}),
         action: SnackBarAction(
             label: translate('common.show'),
             onPressed: () {
-              PersonalTaskLoggerScaffoldState? root = context.findAncestorStateOfType();
+              PersonalTaskLoggerScaffoldState? root =
+                  context.findAncestorStateOfType();
               if (root != null) {
-                final taskEventListState = widget._pagesHolder.taskEventList?.getGlobalKey().currentState;
+                final taskEventListState = widget._pagesHolder.taskEventList
+                    ?.getGlobalKey()
+                    .currentState;
                 if (taskEventListState != null) {
                   taskEventListState.clearFilters();
                 }
-                root.sendEventFromClicked(TASK_EVENT_LIST_ROUTING_KEY, false, newTaskEvent.id.toString(), null);
+                root.sendEventFromClicked(TASK_EVENT_LIST_ROUTING_KEY, false,
+                    newTaskEvent.id.toString(), null);
               }
-            })
-    );
+            }));
 
-    widget._pagesHolder.taskEventList?.getGlobalKey().currentState?.addTaskEvent(newTaskEvent);
-
+    widget._pagesHolder.taskEventList
+        ?.getGlobalKey()
+        .currentState
+        ?.addTaskEvent(newTaskEvent);
   }
-  
+
   GridView _buildTemplateTiles(Orientation orientation) {
     return GridView.builder(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 150,
-            childAspectRatio: (orientation == Orientation.landscape ? 12 : 7) / 6,
+            childAspectRatio:
+                (orientation == Orientation.landscape ? 12 : 7) / 6,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10),
         itemCount: _templates.length,
         itemBuilder: (BuildContext ctx, index) {
           final template = _templates[index];
-          final taskGroup = TaskGroupRepository.findByIdFromCache(template.taskGroupId);
+          final taskGroup =
+              TaskGroupRepository.findByIdFromCache(template.taskGroupId);
           return GestureDetector(
             onLongPressStart: (details) {
               showConfirmationDialog(
                 context,
                 translate('pages.quick_add.deletion.title'),
                 translate('pages.quick_add.deletion.description',
-                  args: {"title" : template.translatedTitle}),
+                    args: {"title": template.translatedTitle}),
                 icon: const Icon(Icons.warning_amber_outlined),
                 okPressed: () {
                   template.favorite = false;
                   TemplateRepository.save(template).then((template) {
-                    toastInfo(context, translate('pages.quick_add.deletion.success',
-                        args: {"title" : template.translatedTitle}));
+                    toastInfo(
+                        context,
+                        translate('pages.quick_add.deletion.success',
+                            args: {"title": template.translatedTitle}));
 
                     setState(() {
                       _templates.remove(template);
                       _sortTemplateList();
                     });
                   });
-                  Navigator.pop(context); // dismiss dialog, should be moved in Dialogs.dart somehow
+                  Navigator.pop(
+                      context); // dismiss dialog, should be moved in Dialogs.dart somehow
                 },
-                cancelPressed: () =>
-                    Navigator.pop(context), // dismiss dialog, should be moved in Dialogs.dart somehow
+                cancelPressed: () => Navigator.pop(
+                    context), // dismiss dialog, should be moved in Dialogs.dart somehow
               );
             },
             onTap: () async {
-              TaskEvent? newTaskEvent = await Navigator.push(
-                  context, MaterialPageRoute(builder: (context) {
+              TaskEvent? newTaskEvent = await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) {
                 return TaskEventForm(
                     formTitle: translate('forms.task_event.create.title'),
                     template: template);
               }));
 
               if (newTaskEvent != null) {
-                TaskEventRepository.insert(newTaskEvent).then((
-                    newTaskEvent) {
+                TaskEventRepository.insert(newTaskEvent).then((newTaskEvent) {
                   _handleNewTaskEvent(newTaskEvent);
                 });
               }
@@ -382,9 +386,8 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
             child: Container(
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  backgroundBlendMode: isDarkMode(context)
-                      ? BlendMode.lighten
-                      : null,
+                  backgroundBlendMode:
+                      isDarkMode(context) ? BlendMode.lighten : null,
                   color: isDarkMode(context)
                       ? taskGroup.softColor(context)
                       : taskGroup.backgroundColor(context),
@@ -405,32 +408,33 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
 
   GridView _buildTaskGroupTiles(Orientation orientation) {
     final taskGroups = _templates
-      .map((template) => TaskGroupRepository.findByIdFromCache(template.taskGroupId))
-      .toSet()
-      .toList();
+        .map((template) =>
+            TaskGroupRepository.findByIdFromCache(template.taskGroupId))
+        .toSet()
+        .toList();
 
-    taskGroups..sort((t1, t2) {
-      if (_sortBy == SortBy.GROUP) {
-        final g1 = t1.id!;
-        final g2 = t2.id!;
-        final c = g2.compareTo(g1);
-        if (c == 0) {
+    taskGroups
+      ..sort((t1, t2) {
+        if (_sortBy == SortBy.GROUP) {
+          final g1 = t1.id!;
+          final g2 = t2.id!;
+          final c = g2.compareTo(g1);
+          if (c == 0) {
+            return _sortTaskGroupByTitleAndId(t1, t2);
+          }
+          return c;
+        } else if (_sortBy == SortBy.TITLE) {
           return _sortTaskGroupByTitleAndId(t1, t2);
+        } else {
+          return t1.compareTo(t2);
         }
-        return c;
-      }
-      else if (_sortBy == SortBy.TITLE) {
-        return _sortTaskGroupByTitleAndId(t1, t2);
-      }
-      else {
-        return t1.compareTo(t2);
-      }
-    });
+      });
 
     return GridView.builder(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 150,
-            childAspectRatio: (orientation == Orientation.landscape ? 12 : 7) / 6,
+            childAspectRatio:
+                (orientation == Orientation.landscape ? 12 : 7) / 6,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10),
         itemCount: taskGroups.length,
@@ -453,7 +457,11 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
                 child: Column(
                   children: [
                     taskGroup.getIcon(true),
-                    Text(taskGroup.translatedName, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),)
+                    Text(
+                      taskGroup.translatedName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )
                   ],
                 ),
               ),
@@ -465,7 +473,8 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
   void _onCreateQuickAddPressed() {
     Object? selectedTemplateItem;
 
-    showTemplateDialog(context,
+    showTemplateDialog(
+        context,
         translate('pages.quick_add.action.new_quick_add.title'),
         translate('pages.quick_add.action.new_quick_add.description'),
         selectedItem: (selectedItem) {
@@ -477,16 +486,20 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
         var template = selectedTemplateItem as Template;
         template.favorite = true;
         TemplateRepository.save(template).then((template) {
-          Navigator.pop(context); // dismiss dialog, should be moved in Dialogs.dart somehow
+          Navigator.pop(
+              context); // dismiss dialog, should be moved in Dialogs.dart somehow
 
           if (_templates.contains(template)) {
-            toastInfo(context, translate('pages.quick_add.addition.exists',
-                args: {"title" : template.translatedTitle}));
-          }
-          else {
+            toastInfo(
+                context,
+                translate('pages.quick_add.addition.exists',
+                    args: {"title": template.translatedTitle}));
+          } else {
             updateTemplate(template);
-            toastInfo(context, translate('pages.quick_add.addition.success',
-                args: {"title" : template.translatedTitle}));
+            toastInfo(
+                context,
+                translate('pages.quick_add.addition.success',
+                    args: {"title": template.translatedTitle}));
           }
         });
       }
@@ -498,7 +511,8 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
   void updateTemplate(Template template) {
     setState(() {
       if (_groupByCategory) {
-        _groupedByTaskGroup = TaskGroupRepository.findByIdFromCache(template.taskGroupId);
+        _groupedByTaskGroup =
+            TaskGroupRepository.findByIdFromCache(template.taskGroupId);
       }
       _loadQuickAdds();
     });
@@ -524,25 +538,23 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
     });
   }
 
-
   void _sortTemplateList() {
-    _templates..sort((t1, t2) {
-      if (_sortBy == SortBy.GROUP) {
-        final g1 = t1.taskGroupId;
-        final g2 = t2.taskGroupId;
-        final c = g2.compareTo(g1);
-        if (c == 0) {
+    _templates
+      ..sort((t1, t2) {
+        if (_sortBy == SortBy.GROUP) {
+          final g1 = t1.taskGroupId;
+          final g2 = t2.taskGroupId;
+          final c = g2.compareTo(g1);
+          if (c == 0) {
+            return _sortTemplateByTitleAndId(t1, t2);
+          }
+          return c;
+        } else if (_sortBy == SortBy.TITLE) {
           return _sortTemplateByTitleAndId(t1, t2);
+        } else {
+          return t1.compareTo(t2);
         }
-        return c;
-      }
-      else if (_sortBy == SortBy.TITLE) {
-        return _sortTemplateByTitleAndId(t1, t2);
-      }
-      else {
-        return t1.compareTo(t2);
-      }
-    });
+      });
   }
 
   int _sortTemplateByTitleAndId(Template t1, Template t2) {
@@ -566,9 +578,8 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
   }
 
   @override
-  handleNotificationClickRouted(bool isAppLaunch, String payload, String? actionId) {
-  }
-
+  handleNotificationClickRouted(
+      bool isAppLaunch, String payload, String? actionId) {}
 
   void _updatePinQuickAddPage(bool value, {required bool withSnackMsg}) {
     setState(() {
@@ -578,11 +589,10 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
         if (withSnackMsg) {
           toastInfo(context, translate('pages.quick_add.menu.pinning.pinned'));
         }
-
-      }
-      else {
+      } else {
         if (withSnackMsg) {
-          toastInfo(context, translate('pages.quick_add.menu.pinning.unpinned'));
+          toastInfo(
+              context, translate('pages.quick_add.menu.pinning.unpinned'));
         }
       }
       _preferenceService.setBool(PREF_PIN_QUICK_ADD, _pinQuickAddPage);
@@ -593,21 +603,20 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
     });
   }
 
-
   void _updateGroupByCategory(bool value, {required bool withSnackMsg}) {
     setState(() {
       _groupByCategory = value;
       groupByCategoryIconKey.currentState?.refresh(_groupByCategory);
       if (_groupByCategory) {
         if (withSnackMsg) {
-          toastInfo(context, translate('pages.quick_add.menu.grouping.by_categories'));
+          toastInfo(context,
+              translate('pages.quick_add.menu.grouping.by_categories'));
         }
-
-      }
-      else {
+      } else {
         _groupedByTaskGroup = null;
         if (withSnackMsg) {
-          toastInfo(context, translate('pages.quick_add.menu.grouping.not_by_categories'));
+          toastInfo(context,
+              translate('pages.quick_add.menu.grouping.not_by_categories'));
         }
       }
       _preferenceService.setBool(PREF_GROUP_BY_CATEGORY, _groupByCategory);
@@ -619,7 +628,9 @@ class QuickAddTaskEventPageState extends PageScaffoldState<QuickAddTaskEventPage
     TemplateRepository.getAllFavorites().then((templates) {
       setState(() {
         _templates = templates
-            .where((template) => _groupedByTaskGroup == null || _groupedByTaskGroup!.id == template.taskGroupId)
+            .where((template) =>
+                _groupedByTaskGroup == null ||
+                _groupedByTaskGroup!.id == template.taskGroupId)
             .toList();
         _sortTemplateList();
       });
